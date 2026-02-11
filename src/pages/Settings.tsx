@@ -1,4 +1,5 @@
-import { ChangeEvent, FormEvent, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
 import type { UserProfile } from '../types/user'
 
 type SettingsProps = {

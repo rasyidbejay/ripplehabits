@@ -163,9 +163,10 @@ export const importAppData = (
       }
     }
 
+    const importedProfile = candidate.userProfile
     const nextRoot: RootStorage = {
       version: STORAGE_VERSION,
-      userProfile: candidate.userProfile,
+      userProfile: importedProfile,
       data: isRecord(candidate.data) ? (candidate.data as Partial<StorageSchema>) : {},
     }
 
@@ -174,7 +175,7 @@ export const importAppData = (
     return {
       ok: true,
       message: 'Import complete. Local data was replaced successfully.',
-      userProfile: nextRoot.userProfile,
+      userProfile: importedProfile,
     }
   } catch {
     return { ok: false, message: 'Import failed: invalid JSON payload.' }

@@ -1,5 +1,21 @@
-import { useMemo } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
+import { format, subDays } from 'date-fns'
 import { useHabits } from '../hooks/useHabits'
+import { storage } from '../utils/storage'
+
+const ChartContainer = lazy(() =>
+  import('../components/charts/ChartContainer').then((module) => ({
+    default: module.ChartContainer,
+  })),
+)
+
+const CompletionLineChart = lazy(() =>
+  import('../components/charts/CompletionLineChart').then((module) => ({
+    default: module.CompletionLineChart,
+  })),
+)
+
+const CHART_DAYS = 7
 
 export const InsightsPage = () => {
   const { habits, totalHabits, activeCount, archivedCount, categories } = useHabits()
@@ -13,6 +29,38 @@ export const InsightsPage = () => {
       .sort((a, b) => b.count - a.count)
   }, [categories, habits])
 
+  const completionTrend = useMemo(() => {
+    const activeHabits = habits.filter((habit) => !habit.isArchived)
+    const activeHabitIds = new Set(activeHabits.map((habit) => habit.id))
+    const checkIns = storage.get('checkIns') ?? []
+
+    return Array.from({ length: CHART_DAYS }, (_, index) => {
+      const targetDate = subDays(new Date(), CHART_DAYS - index - 1)
+      const dateKey = format(targetDate, 'yyyy-MM-dd')
+
+      const completedForDay = new Set(
+        checkIns
+          .filter(
+            (checkIn) =>
+              checkIn.completed &&
+              format(new Date(checkIn.date), 'yyyy-MM-dd') === dateKey &&
+              activeHabitIds.has(checkIn.habitId),
+          )
+          .map((checkIn) => checkIn.habitId),
+      )
+
+      const completionRate =
+        activeHabits.length === 0
+          ? 0
+          : Math.round((completedForDay.size / activeHabits.length) * 100)
+
+      return {
+        date: format(targetDate, 'MMM d'),
+        completionRate,
+      }
+    })
+  }, [habits])
+
   return (
     <section className="space-y-6">
       <div className="rounded-xl border border-slate-200 bg-white p-6">
@@ -23,6 +71,21 @@ export const InsightsPage = () => {
           <li>Archived habits: {archivedCount}</li>
         </ul>
       </div>
+
+      <Suspense
+        fallback={
+          <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+            Loading chart...
+          </div>
+        }
+      >
+        <ChartContainer
+          title="7-day completion trend"
+          description="Percent of active habits completed each day"
+        >
+          <CompletionLineChart data={completionTrend} />
+        </ChartContainer>
+      </Suspense>
 
       <div className="rounded-xl border border-slate-200 bg-white p-6">
         <h3 className="text-lg font-semibold">Category breakdown</h3>

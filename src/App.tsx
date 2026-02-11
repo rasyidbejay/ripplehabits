@@ -4,6 +4,7 @@ import { HabitsPage } from './pages/HabitsPage'
 import { TodayPage } from './pages/TodayPage'
 import { InsightsPage } from './pages/InsightsPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { CalendarPage } from './pages/CalendarPage'
 
 const App = () => {
   return (
@@ -12,6 +13,7 @@ const App = () => {
         <Route path="/" element={<TodayPage />} />
         <Route path="/habits" element={<HabitsPage />} />
         <Route path="/insights" element={<InsightsPage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

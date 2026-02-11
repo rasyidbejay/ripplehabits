@@ -13,21 +13,27 @@ export const OnboardingModal = ({
 }: OnboardingModalProps) => {
   const [name, setName] = useState('')
   const [timezone, setTimezone] = useState(defaultTimezone)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     if (open) {
+      setName('')
       setTimezone(defaultTimezone)
+      setErrorMessage('')
     }
   }, [defaultTimezone, open])
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    if (!name.trim()) {
+    const trimmedName = name.trim()
+
+    if (!trimmedName) {
+      setErrorMessage('Please enter your name to continue.')
       return
     }
 
-    onSave({ name, timezone })
+    onSave({ name: trimmedName, timezone })
   }
 
   return (
@@ -57,7 +63,12 @@ export const OnboardingModal = ({
         <input
           id="onboarding-name"
           value={name}
-          onChange={(event) => setName(event.target.value)}
+          onChange={(event) => {
+            setName(event.target.value)
+            if (errorMessage) {
+              setErrorMessage('')
+            }
+          }}
           placeholder="Your name"
           className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
           required
@@ -72,6 +83,8 @@ export const OnboardingModal = ({
           onChange={(event) => setTimezone(event.target.value)}
           className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
         />
+
+        {errorMessage ? <p className="mt-3 text-xs text-rose-600">{errorMessage}</p> : null}
 
         <button
           type="submit"

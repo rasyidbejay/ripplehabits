@@ -22,6 +22,8 @@ export type Weekday =
   | 'sunday'
 
 export interface UserPreferences {
+  name: string
+  timezone: string
   theme: ThemePreference
   weekStartsOn: Weekday
   remindersEnabled: boolean

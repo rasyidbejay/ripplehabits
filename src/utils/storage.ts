@@ -15,6 +15,8 @@ export const STORAGE_KEYS = {
   routines: 'ripplehabits:routines',
 } as const
 
+export const ANTHROPIC_API_KEY_STORAGE_KEY = 'anthropicApiKey'
+
 export interface StorageSchema {
   userPreferences: UserPreferences
   habits: Habit[]
@@ -126,4 +128,18 @@ export const loadHabits = (): LegacyHabit[] => {
 
 export const saveHabits = (habits: LegacyHabit[]): void => {
   localStorage.setItem(LEGACY_HABITS_KEY, JSON.stringify(habits))
+}
+
+export const getAnthropicApiKey = (): string =>
+  localStorage.getItem(ANTHROPIC_API_KEY_STORAGE_KEY) ?? ''
+
+export const setAnthropicApiKey = (apiKey: string): void => {
+  const trimmedApiKey = apiKey.trim()
+
+  if (!trimmedApiKey) {
+    localStorage.removeItem(ANTHROPIC_API_KEY_STORAGE_KEY)
+    return
+  }
+
+  localStorage.setItem(ANTHROPIC_API_KEY_STORAGE_KEY, trimmedApiKey)
 }

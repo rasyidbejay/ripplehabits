@@ -1,6 +1,8 @@
-import { ChangeEvent, FormEvent, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
 import { useUserPreferences } from '../hooks/useUserPreferences'
 import type { ThemePreference } from '../types/models'
+import { getAnthropicApiKey, setAnthropicApiKey } from '../utils/storage'
 
 const themeOptions: ThemePreference[] = ['system', 'light', 'dark']
 
@@ -12,6 +14,7 @@ export const SettingsPage = () => {
   const [name, setName] = useState(preferences?.name ?? '')
   const [timezone, setTimezone] = useState(preferences?.timezone ?? detectTimezone())
   const [theme, setTheme] = useState<ThemePreference>(preferences?.theme ?? 'system')
+  const [anthropicApiKey, setAnthropicApiKeyValue] = useState(() => getAnthropicApiKey())
   const [statusMessage, setStatusMessage] = useState('')
 
   const exportFileName = useMemo(
@@ -27,6 +30,8 @@ export const SettingsPage = () => {
       timezone: timezone.trim(),
       theme,
     })
+
+    setAnthropicApiKey(anthropicApiKey)
 
     setStatusMessage('Preferences saved.')
   }
@@ -103,6 +108,24 @@ export const SettingsPage = () => {
             className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
             required
           />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-slate-700" htmlFor="settings-anthropic-api-key">
+            Anthropic API key
+          </label>
+          <input
+            id="settings-anthropic-api-key"
+            type="password"
+            value={anthropicApiKey}
+            onChange={(event) => setAnthropicApiKeyValue(event.target.value)}
+            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          <p className="mt-2 text-xs text-amber-700">
+            This key is stored in browser and visible in developer tools.
+          </p>
         </div>
 
         <div>

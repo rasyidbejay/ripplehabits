@@ -5,19 +5,11 @@ import type {
   Routine,
   UserPreferences,
 } from '../types/models'
-import type { AppDataExport, UserProfile } from '../types/user'
-import type { Habit as LegacyHabit } from '../types/habit'
+import type { UserProfile } from '../types/user'
 
-export const STORAGE_KEYS = {
-  userPreferences: 'ripplehabits:userPreferences',
-  habits: 'ripplehabits:habits',
-  checkIns: 'ripplehabits:checkIns',
-  achievements: 'ripplehabits:achievements',
-  routines: 'ripplehabits:routines',
-} as const
-
-export const USER_PROFILE_STORAGE_KEY = 'ripple_user_profile'
-export const ANTHROPIC_API_KEY_STORAGE_KEY = 'anthropicApiKey'
+const ROOT_STORAGE_KEY = 'ripple:v1'
+const STORAGE_VERSION = 1 as const
+const ANTHROPIC_API_KEY_STORAGE_KEY = 'anthropicApiKey'
 
 export interface StorageSchema {
   userPreferences: UserPreferences
@@ -31,7 +23,30 @@ type CollectionKey = {
   [K in keyof StorageSchema]: StorageSchema[K] extends Array<unknown> ? K : never
 }[keyof StorageSchema]
 
+interface RootStorage {
+  version: typeof STORAGE_VERSION
+  userProfile: UserProfile | null
+  data: Partial<StorageSchema>
+}
+
+export interface AppDataExport {
+  version: typeof STORAGE_VERSION
+  exportedAt: string
+  payload: RootStorage
+}
+
 const detectTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+
+const createDefaultRoot = (): RootStorage => ({
+  version: STORAGE_VERSION,
+  userProfile: null,
+  data: {
+    habits: [],
+    checkIns: [],
+    achievements: [],
+    routines: [],
+  },
+})
 
 const isUserProfile = (value: unknown): value is UserProfile => {
   if (!value || typeof value !== 'object') {
@@ -41,101 +56,90 @@ const isUserProfile = (value: unknown): value is UserProfile => {
   const candidate = value as Partial<UserProfile>
 
   return (
+    typeof candidate.id === 'string' &&
     typeof candidate.name === 'string' &&
     typeof candidate.timezone === 'string' &&
+    typeof candidate.createdAt === 'string' &&
     typeof candidate.updatedAt === 'string'
   )
 }
 
-const normalizeUserProfile = (value: Pick<UserProfile, 'name' | 'timezone'>): UserProfile => ({
-  name: value.name.trim(),
-  timezone: value.timezone.trim() || detectTimezone(),
-  updatedAt: new Date().toISOString(),
-})
+const readRoot = (): RootStorage => {
+  const raw = localStorage.getItem(ROOT_STORAGE_KEY)
 
-const readFromStorage = <K extends keyof StorageSchema>(
-  key: K,
-): StorageSchema[K] | null => {
-  const rawValue = localStorage.getItem(STORAGE_KEYS[key])
-
-  if (!rawValue) {
-    return null
+  if (!raw) {
+    return createDefaultRoot()
   }
 
   try {
-    return JSON.parse(rawValue) as StorageSchema[K]
-  } catch {
-    return null
-  }
-}
+    const parsed = JSON.parse(raw) as Partial<RootStorage>
 
-const writeToStorage = <K extends keyof StorageSchema>(
-  key: K,
-  value: StorageSchema[K],
-): void => {
-  localStorage.setItem(STORAGE_KEYS[key], JSON.stringify(value))
-}
-
-export const getUserProfile = (): UserProfile | null => {
-  const rawProfile = localStorage.getItem(USER_PROFILE_STORAGE_KEY)
-
-  if (rawProfile) {
-    try {
-      const parsed = JSON.parse(rawProfile) as unknown
-
-      if (isUserProfile(parsed)) {
-        return parsed
-      }
-    } catch {
-      return null
+    if (parsed.version !== STORAGE_VERSION || typeof parsed !== 'object') {
+      return createDefaultRoot()
     }
 
-    return null
+    return {
+      version: STORAGE_VERSION,
+      userProfile: isUserProfile(parsed.userProfile) ? parsed.userProfile : null,
+      data: typeof parsed.data === 'object' && parsed.data ? parsed.data : {},
+    }
+  } catch {
+    return createDefaultRoot()
   }
-
-  const legacyPreferences = readFromStorage('userPreferences')
-
-  if (!legacyPreferences || !legacyPreferences.name.trim()) {
-    return null
-  }
-
-  const migratedProfile = normalizeUserProfile({
-    name: legacyPreferences.name,
-    timezone: legacyPreferences.timezone,
-  })
-
-  localStorage.setItem(USER_PROFILE_STORAGE_KEY, JSON.stringify(migratedProfile))
-  return migratedProfile
 }
+
+const writeRoot = (value: RootStorage): void => {
+  localStorage.setItem(ROOT_STORAGE_KEY, JSON.stringify(value))
+}
+
+const createProfile = (input: { name: string; timezone?: string }): UserProfile => {
+  const now = new Date().toISOString()
+
+  return {
+    id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}`,
+    name: input.name.trim(),
+    timezone: input.timezone?.trim() || detectTimezone(),
+    createdAt: now,
+    updatedAt: now,
+  }
+}
+
+export const getUserProfile = (): UserProfile | null => readRoot().userProfile
 
 export const saveUserProfile = (
   profile: Pick<UserProfile, 'name' | 'timezone'>,
 ): UserProfile => {
-  const nextProfile = normalizeUserProfile(profile)
-  localStorage.setItem(USER_PROFILE_STORAGE_KEY, JSON.stringify(nextProfile))
+  const root = readRoot()
+
+  const existing = root.userProfile
+  const now = new Date().toISOString()
+
+  const nextProfile = existing
+    ? {
+        ...existing,
+        name: profile.name.trim(),
+        timezone: profile.timezone.trim() || detectTimezone(),
+        updatedAt: now,
+      }
+    : createProfile(profile)
+
+  writeRoot({ ...root, userProfile: nextProfile })
 
   return nextProfile
 }
 
 export const exportAppData = (): string => {
-  const userProfile = getUserProfile()
-
-  if (!userProfile) {
-    throw new Error('Cannot export data without a saved user profile.')
-  }
-
   const payload: AppDataExport = {
-    userProfile,
-    habits: readFromStorage('habits') ?? [],
-    checkIns: readFromStorage('checkIns') ?? [],
-    achievements: readFromStorage('achievements') ?? [],
-    routines: readFromStorage('routines') ?? [],
+    version: STORAGE_VERSION,
+    exportedAt: new Date().toISOString(),
+    payload: readRoot(),
   }
 
   return JSON.stringify(payload, null, 2)
 }
 
-const isArrayField = (value: unknown): value is unknown[] => Array.isArray(value)
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
 
 export const importAppData = (
   jsonValue: string,
@@ -143,74 +147,70 @@ export const importAppData = (
   try {
     const parsed = JSON.parse(jsonValue) as Partial<AppDataExport>
 
-    if (!parsed || typeof parsed !== 'object') {
-      return { ok: false, message: 'Import failed: JSON payload is not an object.' }
-    }
-
-    if (!isUserProfile(parsed.userProfile)) {
+    if (!isRecord(parsed) || parsed.version !== STORAGE_VERSION || !isRecord(parsed.payload)) {
       return {
         ok: false,
-        message:
-          'Import failed: missing or invalid userProfile. Expected name, timezone, and updatedAt.',
+        message: `Import failed: expected backup version ${STORAGE_VERSION}.`,
       }
     }
 
-    if (
-      !isArrayField(parsed.habits) ||
-      !isArrayField(parsed.checkIns) ||
-      !isArrayField(parsed.achievements) ||
-      !isArrayField(parsed.routines)
-    ) {
+    const candidate = parsed.payload as Partial<RootStorage>
+
+    if (!isUserProfile(candidate.userProfile)) {
       return {
         ok: false,
-        message:
-          'Import failed: habits, checkIns, achievements, and routines must all be arrays.',
+        message: 'Import failed: userProfile is missing or invalid.',
       }
     }
 
-    localStorage.setItem(USER_PROFILE_STORAGE_KEY, JSON.stringify(parsed.userProfile))
-    writeToStorage('habits', parsed.habits as Habit[])
-    writeToStorage('checkIns', parsed.checkIns as CheckIn[])
-    writeToStorage('achievements', parsed.achievements as Achievement[])
-    writeToStorage('routines', parsed.routines as Routine[])
+    const nextRoot: RootStorage = {
+      version: STORAGE_VERSION,
+      userProfile: candidate.userProfile,
+      data: isRecord(candidate.data) ? (candidate.data as Partial<StorageSchema>) : {},
+    }
+
+    writeRoot(nextRoot)
 
     return {
       ok: true,
-      message: 'Data imported successfully.',
-      userProfile: parsed.userProfile,
+      message: 'Import complete. Local data was replaced successfully.',
+      userProfile: nextRoot.userProfile,
     }
   } catch {
-    return { ok: false, message: 'Import failed: JSON is invalid.' }
+    return { ok: false, message: 'Import failed: invalid JSON payload.' }
   }
 }
 
 export const storage = {
   get<K extends keyof StorageSchema>(key: K): StorageSchema[K] | null {
-    return readFromStorage(key)
+    const root = readRoot()
+    return (root.data[key] as StorageSchema[K] | undefined) ?? null
   },
 
   set<K extends keyof StorageSchema>(key: K, value: StorageSchema[K]): void {
-    writeToStorage(key, value)
+    const root = readRoot()
+    writeRoot({ ...root, data: { ...root.data, [key]: value } })
   },
 
   remove<K extends keyof StorageSchema>(key: K): void {
-    localStorage.removeItem(STORAGE_KEYS[key])
+    const root = readRoot()
+    const next = { ...root.data }
+    delete next[key]
+    writeRoot({ ...root, data: next })
   },
 
   clear(): void {
-    Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key))
-    localStorage.removeItem(USER_PROFILE_STORAGE_KEY)
+    localStorage.removeItem(ROOT_STORAGE_KEY)
   },
 
   create<K extends CollectionKey>(
     key: K,
     item: StorageSchema[K][number],
   ): StorageSchema[K] {
-    const collection = (readFromStorage(key) ?? []) as StorageSchema[K]
-    const nextCollection = [...collection, item] as StorageSchema[K]
-
-    writeToStorage(key, nextCollection)
-    return nextCollection
+    const collection = (this.get(key) ?? []) as StorageSchema[K]
+    const next = [...collection, item] as StorageSchema[K]
+    this.set(key, next)
+    return next
   },
 
   update<K extends CollectionKey>(
@@ -218,60 +218,40 @@ export const storage = {
     predicate: (item: StorageSchema[K][number]) => boolean,
     updater: (item: StorageSchema[K][number]) => StorageSchema[K][number],
   ): StorageSchema[K] {
-    const collection = (readFromStorage(key) ?? []) as StorageSchema[K]
-    const nextCollection = collection.map((item) =>
+    const collection = (this.get(key) ?? []) as StorageSchema[K]
+    const next = collection.map((item) =>
       predicate(item) ? updater(item) : item,
     ) as StorageSchema[K]
 
-    writeToStorage(key, nextCollection)
-    return nextCollection
+    this.set(key, next)
+    return next
   },
 
   delete<K extends CollectionKey>(
     key: K,
     predicate: (item: StorageSchema[K][number]) => boolean,
   ): StorageSchema[K] {
-    const collection = (readFromStorage(key) ?? []) as StorageSchema[K]
-    const nextCollection = collection.filter(
-      (item) => !predicate(item),
-    ) as StorageSchema[K]
-
-    writeToStorage(key, nextCollection)
-    return nextCollection
+    const collection = (this.get(key) ?? []) as StorageSchema[K]
+    const next = collection.filter((item) => !predicate(item)) as StorageSchema[K]
+    this.set(key, next)
+    return next
   },
-}
 
-const LEGACY_HABITS_KEY = 'ripplehabits:legacy-habits'
-
-export const loadHabits = (): LegacyHabit[] => {
-  const rawValue = localStorage.getItem(LEGACY_HABITS_KEY)
-
-  if (!rawValue) {
-    return []
-  }
-
-  try {
-    const parsed = JSON.parse(rawValue) as unknown
-    return Array.isArray(parsed) ? (parsed as LegacyHabit[]) : []
-  } catch {
-    return []
-  }
-}
-
-export const saveHabits = (habits: LegacyHabit[]): void => {
-  localStorage.setItem(LEGACY_HABITS_KEY, JSON.stringify(habits))
+  list<K extends CollectionKey>(key: K): StorageSchema[K] {
+    return ((this.get(key) ?? []) as StorageSchema[K])
+  },
 }
 
 export const getAnthropicApiKey = (): string =>
   localStorage.getItem(ANTHROPIC_API_KEY_STORAGE_KEY) ?? ''
 
-export const setAnthropicApiKey = (apiKey: string): void => {
-  const trimmedApiKey = apiKey.trim()
-
-  if (!trimmedApiKey) {
+export const setAnthropicApiKey = (value: string): void => {
+  if (!value.trim()) {
     localStorage.removeItem(ANTHROPIC_API_KEY_STORAGE_KEY)
     return
   }
 
-  localStorage.setItem(ANTHROPIC_API_KEY_STORAGE_KEY, trimmedApiKey)
+  localStorage.setItem(ANTHROPIC_API_KEY_STORAGE_KEY, value.trim())
 }
+
+export const getRootStorageKey = (): string => ROOT_STORAGE_KEY

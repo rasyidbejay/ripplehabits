@@ -1,13 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
-import { DashboardPage } from './pages/DashboardPage'
+import { HabitsPage } from './pages/HabitsPage'
 import { InsightsPage } from './pages/InsightsPage'
 
 const App = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<DashboardPage />} />
+        <Route path="/" element={<HabitsPage />} />
         <Route path="/insights" element={<InsightsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

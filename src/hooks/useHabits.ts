@@ -1,83 +1,104 @@
-import { formatISO, isSameDay, parseISO, startOfToday } from 'date-fns'
-import { useEffect, useMemo, useState } from 'react'
-import type { Habit, HabitStats } from '../types/habit'
-import { loadHabits, saveHabits } from '../utils/storage'
+import { useMemo, useState } from 'react'
+import type { Habit, HabitCategory, HabitFrequencyType } from '../types/models'
+import { storage } from '../utils/storage'
+
+type CreateHabitInput = {
+  name: string
+  description: string
+  category: HabitCategory
+  frequencyType: HabitFrequencyType
+}
+
+type UpdateHabitInput = Partial<
+  Pick<Habit, 'name' | 'description' | 'category' | 'frequencyType' | 'isArchived'>
+>
+
+const DEFAULT_COLOR = '#6366f1'
+const DEFAULT_ICON = 'sparkles'
 
 export const useHabits = () => {
-  const [habits, setHabits] = useState<Habit[]>(() => loadHabits())
+  const [habits, setHabits] = useState<Habit[]>(() => storage.get('habits') ?? [])
 
-  useEffect(() => {
-    saveHabits(habits)
-  }, [habits])
+  const createHabit = ({ name, description, category, frequencyType }: CreateHabitInput) => {
+    const trimmedName = name.trim()
+    const trimmedDescription = description.trim()
 
-  const addHabit = (name: string) => {
-    const trimmed = name.trim()
-
-    if (!trimmed) {
-      return
+    if (!trimmedName) {
+      return null
     }
 
     const habit: Habit = {
       id: crypto.randomUUID(),
-      name: trimmed,
-      createdAt: new Date().toISOString(),
-      completedDates: [],
+      name: trimmedName,
+      description: trimmedDescription,
+      category,
+      color: DEFAULT_COLOR,
+      icon: DEFAULT_ICON,
+      frequencyType,
+      targetDays: [],
+      createdDate: new Date().toISOString(),
+      isArchived: false,
     }
 
-    setHabits((current) => [habit, ...current])
+    const nextHabits = storage.create('habits', habit)
+    setHabits(nextHabits)
+
+    return habit
   }
 
-  const toggleCompleteToday = (habitId: string) => {
-    const today = startOfToday()
-
-    setHabits((current) =>
-      current.map((habit) => {
-        if (habit.id !== habitId) {
-          return habit
-        }
-
-        const completedToday = habit.completedDates.some((date) => isSameDay(parseISO(date), today))
-
-        if (completedToday) {
-          return {
-            ...habit,
-            completedDates: habit.completedDates.filter((date) => !isSameDay(parseISO(date), today)),
-          }
-        }
-
-        return {
-          ...habit,
-          completedDates: [...habit.completedDates, formatISO(today, { representation: 'date' })],
-        }
+  const updateHabit = (habitId: Habit['id'], updates: UpdateHabitInput) => {
+    const nextHabits = storage.update(
+      'habits',
+      (habit) => habit.id === habitId,
+      (habit) => ({
+        ...habit,
+        ...updates,
+        name: updates.name !== undefined ? updates.name.trim() : habit.name,
+        description:
+          updates.description !== undefined
+            ? updates.description.trim()
+            : habit.description,
       }),
     )
+
+    setHabits(nextHabits)
   }
 
-  const removeHabit = (habitId: string) => {
-    setHabits((current) => current.filter((habit) => habit.id !== habitId))
+  const archiveHabit = (habitId: Habit['id']) => {
+    updateHabit(habitId, { isArchived: true })
   }
 
-  const stats = useMemo<HabitStats>(() => {
-    const today = startOfToday()
-    const completedToday = habits.filter((habit) =>
-      habit.completedDates.some((date) => isSameDay(parseISO(date), today)),
-    ).length
+  const unarchiveHabit = (habitId: Habit['id']) => {
+    updateHabit(habitId, { isArchived: false })
+  }
 
-    const totalHabits = habits.length
-    const completionRate = totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0
+  const deleteHabit = (habitId: Habit['id']) => {
+    const nextHabits = storage.delete('habits', (habit) => habit.id === habitId)
+    setHabits(nextHabits)
+  }
+
+  const derived = useMemo(() => {
+    const activeHabits = habits.filter((habit) => !habit.isArchived)
+    const archivedHabits = habits.filter((habit) => habit.isArchived)
+    const categories = Array.from(new Set(habits.map((habit) => habit.category)))
 
     return {
-      totalHabits,
-      completedToday,
-      completionRate,
+      activeHabits,
+      archivedHabits,
+      categories,
+      totalHabits: habits.length,
+      activeCount: activeHabits.length,
+      archivedCount: archivedHabits.length,
     }
   }, [habits])
 
   return {
     habits,
-    stats,
-    addHabit,
-    removeHabit,
-    toggleCompleteToday,
+    ...derived,
+    createHabit,
+    updateHabit,
+    archiveHabit,
+    unarchiveHabit,
+    deleteHabit,
   }
 }

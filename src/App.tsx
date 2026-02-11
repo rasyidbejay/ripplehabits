@@ -1,23 +1,52 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { Layout } from './components/Layout'
-import { HabitsPage } from './pages/HabitsPage'
-import { TodayPage } from './pages/TodayPage'
-import { InsightsPage } from './pages/InsightsPage'
-import { SettingsPage } from './pages/SettingsPage'
-import { CalendarPage } from './pages/CalendarPage'
+import { AppLayout } from './components/AppLayout'
+import { OnboardingModal } from './components/OnboardingModal'
+import { useLocalUser } from './hooks/useLocalUser'
+import { Dashboard } from './pages/Dashboard'
+import { Habits } from './pages/Habits'
+import { Home } from './pages/Home'
+import { NotFound } from './pages/NotFound'
+import { Settings } from './pages/Settings'
+
+const detectTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 
 const App = () => {
+  const { user, isFirstRun, createUser, updateUser, exportAll, importAll } = useLocalUser()
+
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<TodayPage />} />
-        <Route path="/habits" element={<HabitsPage />} />
-        <Route path="/insights" element={<InsightsPage />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Route>
-    </Routes>
+    <>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={user ? <Home user={user} /> : <Navigate to="/settings" replace />} />
+          <Route path="/habits" element={<Habits />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/settings"
+            element={
+              user ? (
+                <Settings
+                  user={user}
+                  onSave={updateUser}
+                  onExport={exportAll}
+                  onImport={importAll}
+                />
+              ) : (
+                <section className="space-y-2">
+                  <h1 className="text-xl font-semibold">Complete onboarding to access settings.</h1>
+                </section>
+              )
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+
+      <OnboardingModal
+        open={isFirstRun}
+        defaultTimezone={detectTimezone()}
+        onSave={createUser}
+      />
+    </>
   )
 }
 

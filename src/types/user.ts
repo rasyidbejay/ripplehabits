@@ -1,13 +1,7 @@
 export interface UserProfile {
+  id: string
   name: string
   timezone: string
+  createdAt: string
   updatedAt: string
-}
-
-export interface AppDataExport {
-  userProfile: UserProfile
-  habits: unknown[]
-  checkIns: unknown[]
-  achievements: unknown[]
-  routines: unknown[]
 }

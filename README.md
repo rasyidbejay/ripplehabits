@@ -1,73 +1,78 @@
-# React + TypeScript + Vite
+# RippleHabits
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+RippleHabits is a React + TypeScript habit tracker designed to make consistent progress visible through small, repeatable actions.
 
-Currently, two official plugins are available:
+## Tech stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19
+- TypeScript
+- Vite
+- ESLint
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1) Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js 20+ (LTS recommended)
+- npm 10+
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 2) Install dependencies
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3) Run locally
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+The app will be available at `http://localhost:5173` by default.
+
+### 4) Build for production
+
+```bash
+npm run build
+```
+
+### 5) Preview production build
+
+```bash
+npm run preview
+```
+
+## Deployment (GitHub Pages)
+
+This repository includes a GitHub Actions workflow that:
+
+1. Installs dependencies
+2. Builds the app
+3. Deploys `dist/` to GitHub Pages
+
+### Required one-time GitHub settings
+
+1. Go to **Settings → Pages**.
+2. Set **Source** to **GitHub Actions**.
+3. Push to the `main` branch to trigger deployment.
+
+### Notes for project pages
+
+If this is hosted at `https://<username>.github.io/ripplehabits/`, make sure Vite uses the repository base path. This project automatically sets `base` to `/<repo>/` during GitHub Actions builds.
+
+## Branch protection recommendations
+
+Use branch protection on `main` with these rules:
+
+- Require pull request before merging (at least 1 approval)
+- Require status checks to pass before merging:
+  - `build-and-deploy`
+- Require branches to be up to date before merging
+- Restrict force pushes and branch deletion
+- (Optional) Require signed commits
+
+For a checklist version, see [`docs/branch-protection.md`](docs/branch-protection.md).
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).

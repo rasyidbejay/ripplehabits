@@ -1,11 +1,17 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { OnboardingModal } from './OnboardingModal'
+import { useUserPreferences } from '../hooks/useUserPreferences'
 
 const navItems = [
   { to: '/', label: 'Today' },
   { to: '/insights', label: 'Insights' },
+  { to: '/settings', label: 'Settings' },
 ]
 
 export const Layout = () => {
+  const { shouldShowOnboarding, savePreferences } = useUserPreferences()
+  const defaultTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="border-b border-slate-200 bg-white/90 backdrop-blur-sm">
@@ -36,6 +42,12 @@ export const Layout = () => {
       <main className="mx-auto max-w-3xl px-4 py-8">
         <Outlet />
       </main>
+
+      <OnboardingModal
+        open={shouldShowOnboarding}
+        defaultTimezone={defaultTimezone}
+        onSave={savePreferences}
+      />
     </div>
   )
 }

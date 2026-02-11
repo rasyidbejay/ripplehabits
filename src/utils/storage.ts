@@ -5,6 +5,7 @@ import type {
   Routine,
   UserPreferences,
 } from '../types/models'
+import type { Habit as LegacyHabit } from '../types/habit'
 
 export const STORAGE_KEYS = {
   userPreferences: 'ripplehabits:userPreferences',
@@ -103,4 +104,26 @@ export const storage = {
     writeToStorage(key, nextCollection)
     return nextCollection
   },
+}
+
+
+const LEGACY_HABITS_KEY = 'ripplehabits:legacy-habits'
+
+export const loadHabits = (): LegacyHabit[] => {
+  const rawValue = localStorage.getItem(LEGACY_HABITS_KEY)
+
+  if (!rawValue) {
+    return []
+  }
+
+  try {
+    const parsed = JSON.parse(rawValue) as unknown
+    return Array.isArray(parsed) ? (parsed as LegacyHabit[]) : []
+  } catch {
+    return []
+  }
+}
+
+export const saveHabits = (habits: LegacyHabit[]): void => {
+  localStorage.setItem(LEGACY_HABITS_KEY, JSON.stringify(habits))
 }

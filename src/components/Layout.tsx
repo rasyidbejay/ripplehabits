@@ -3,7 +3,8 @@ import { OnboardingModal } from './OnboardingModal'
 import { useUserPreferences } from '../hooks/useUserPreferences'
 
 const navItems = [
-  { to: '/', label: 'Habits' },
+  { to: '/', label: 'Today' },
+  { to: '/habits', label: 'Habits' },
   { to: '/insights', label: 'Insights' },
   { to: '/settings', label: 'Settings' },
 ]

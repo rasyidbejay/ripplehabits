@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
-import { ThemeSwitcher } from './ThemeSwitcher'
 import { desktopNavItems } from './navItems'
+import { ThemeSwitcher } from './ThemeSwitcher'
 
 export const DesktopNav = () => {
   return (
@@ -15,15 +15,28 @@ export const DesktopNav = () => {
               end={to === '/'}
               className={({ isActive }) =>
                 [
-                  'flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-medium transition-colors',
+                  'flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-accent text-white shadow-sm'
+                    ? 'bg-accent/15 text-accent'
                     : 'text-content-secondary hover:bg-surface-tertiary hover:text-content-primary',
                 ].join(' ')
               }
             >
-              <Icon className="h-4.5 w-4.5" />
-              {label}
+              {({ isActive }) => (
+                <>
+                  <Icon
+                    className={[
+                      'transition-all duration-200',
+                      isActive
+                        ? 'active-icon fill-accent/20 text-accent'
+                        : 'text-content-muted',
+                    ].join(' ')}
+                    width={18}
+                    height={18}
+                  />
+                  {label}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>

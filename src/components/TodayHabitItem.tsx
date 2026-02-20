@@ -77,7 +77,7 @@ export const TodayHabitItem = ({
           defaultValue={checkIn?.notes ?? ''}
           onBlur={(event) => onSaveNotes(habit.id, event.target.value)}
           rows={2}
-          className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none ring-accent focus:ring-2"
+          className="w-full rounded-lg border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none ring-accent focus:ring-2"
           placeholder="Add context for today's check-in"
         />
       </div>

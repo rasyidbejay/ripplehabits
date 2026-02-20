@@ -122,7 +122,7 @@ export const HabitForm = ({
               setValues((current) => ({ ...current, name: event.target.value }))
             }
             placeholder="Read for 20 minutes"
-            className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none ring-accent focus:ring-2"
+            className="w-full rounded-lg border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none ring-accent focus:ring-2"
           />
         </label>
 
@@ -138,7 +138,7 @@ export const HabitForm = ({
             }
             rows={2}
             placeholder="Optional notes about this habit"
-            className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none ring-accent focus:ring-2"
+            className="w-full rounded-lg border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none ring-accent focus:ring-2"
           />
         </label>
 
@@ -152,7 +152,7 @@ export const HabitForm = ({
                 category: event.target.value as HabitCategory,
               }))
             }
-            className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none ring-accent focus:ring-2"
+            className="w-full rounded-lg border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none ring-accent focus:ring-2"
           >
             {CATEGORY_OPTIONS.map((option) => (
               <option key={option} value={option}>
@@ -172,7 +172,7 @@ export const HabitForm = ({
                 frequencyType: event.target.value as HabitFrequencyType,
               }))
             }
-            className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none ring-accent focus:ring-2"
+            className="w-full rounded-lg border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none ring-accent focus:ring-2"
           >
             {FREQUENCY_OPTIONS.map((option) => (
               <option key={option} value={option}>
@@ -215,7 +215,7 @@ export const HabitForm = ({
       <div className="flex items-center gap-2">
         <button
           type="submit"
-          className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white hover:bg-accent/90"
+          className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-surface-secondary hover:bg-accent/90"
         >
           {submitLabel}
         </button>

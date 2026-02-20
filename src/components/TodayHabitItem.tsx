@@ -14,10 +14,24 @@ export const TodayHabitItem = ({
   onSaveNotes,
 }: TodayHabitItemProps) => {
   return (
-    <article className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+    <article
+      className={[
+        'space-y-3 rounded-xl border p-4 transition',
+        checkIn?.completed
+          ? 'border-emerald-200 bg-emerald-50/60'
+          : 'border-slate-200 bg-white',
+      ].join(' ')}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-slate-900">{habit.name}</h3>
+          <h3
+            className={[
+              'text-base font-semibold',
+              checkIn?.completed ? 'text-emerald-800 line-through' : 'text-slate-900',
+            ].join(' ')}
+          >
+            {habit.name}
+          </h3>
           {habit.description ? (
             <p className="mt-1 text-sm text-slate-600">{habit.description}</p>
           ) : null}

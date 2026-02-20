@@ -82,7 +82,7 @@ export const HabitsPage = () => {
                 setEditingHabit(null)
                 setShowCreateForm(true)
               }}
-              className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white hover:bg-accent/90"
+              className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-surface-secondary hover:bg-accent/90"
             >
               Add Habit
             </button>
@@ -97,7 +97,7 @@ export const HabitsPage = () => {
             <select
               value={categoryFilter}
               onChange={(event) => setCategoryFilter(event.target.value as CategoryFilter)}
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary"
             >
               {CATEGORY_FILTERS.map((option) => (
                 <option key={option} value={option}>
@@ -112,7 +112,7 @@ export const HabitsPage = () => {
             <select
               value={archiveFilter}
               onChange={(event) => setArchiveFilter(event.target.value as ArchiveFilter)}
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary"
             >
               <option value="active">Active</option>
               <option value="archived">Archived</option>

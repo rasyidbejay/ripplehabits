@@ -16,15 +16,28 @@ export const MobileDock = ({ className = '' }: MobileDockProps) => {
               end={to === '/'}
               className={({ isActive }) =>
                 [
-                  'flex min-h-11 flex-col items-center justify-center rounded-2xl px-2 py-1 text-[10px] font-medium transition-all duration-200',
+                  'flex min-h-11 flex-col items-center justify-center rounded-2xl px-2 py-1 text-[10px] font-medium tracking-wide transition-all duration-200',
                   isActive
-                    ? 'scale-105 bg-accent/15 text-accent'
+                    ? 'scale-105 text-accent'
                     : 'text-content-muted hover:text-content-primary',
                 ].join(' ')
               }
             >
-              <Icon className="h-5.5 w-5.5" />
-              <span className="mt-1 leading-none">{label}</span>
+              {({ isActive }) => (
+                <>
+                  <Icon
+                    className={[
+                      'transition-all duration-200',
+                      isActive
+                        ? 'active-icon fill-accent/20 text-accent'
+                        : 'text-content-muted',
+                    ].join(' ')}
+                    width={22}
+                    height={22}
+                  />
+                  <span className="mt-1 leading-none">{label}</span>
+                </>
+              )}
             </NavLink>
           </li>
         ))}

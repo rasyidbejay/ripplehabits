@@ -89,7 +89,7 @@ export const OnboardingModal = ({
 
         <button
           type="submit"
-          className="mt-6 min-h-11 w-full rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90"
+          className="mt-6 min-h-11 w-full rounded-xl bg-accent px-4 py-2 text-sm font-medium text-surface-secondary transition hover:bg-accent/90"
         >
           Save profile
         </button>

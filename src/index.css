@@ -68,6 +68,15 @@ body {
   }
 }
 
+
+.active-icon {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-accent) 55%, transparent));
+}
+
+.dark .active-icon {
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-accent) 45%, transparent));
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

@@ -34,7 +34,7 @@ const getBadgeClassName = (threshold: number) => {
   }
 
   if (threshold >= 7) {
-    return 'bg-blue-100 text-blue-700'
+    return 'bg-accent-light text-accent'
   }
 
   return 'bg-surface-tertiary text-content-secondary'

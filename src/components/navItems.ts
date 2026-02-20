@@ -1,18 +1,28 @@
+import type { ComponentType, SVGProps } from 'react'
 import {
   BarChart3Icon,
-  CalendarCheckIcon,
-  CalendarIcon,
-  HomeIcon,
-  ListTodoIcon,
+  CalendarDaysIcon,
+  CircleCheckBigIcon,
+  HouseIcon,
+  RepeatIcon,
   SettingsIcon,
 } from './icons'
 
-export const primaryNavItems = [
-  { to: '/', label: 'Home', icon: HomeIcon },
-  { to: '/today', label: 'Today', icon: CalendarCheckIcon },
-  { to: '/habits', label: 'Habits', icon: ListTodoIcon },
-  { to: '/calendar', label: 'Calendar', icon: CalendarIcon },
-  { to: '/dashboard', label: 'Dashboard', icon: BarChart3Icon },
-] as const
+type NavItem = {
+  to: string
+  label: string
+  icon: ComponentType<SVGProps<SVGSVGElement>>
+}
 
-export const desktopNavItems = [...primaryNavItems, { to: '/settings', label: 'Settings', icon: SettingsIcon }] as const
+export const primaryNavItems: NavItem[] = [
+  { to: '/', label: 'Home', icon: HouseIcon },
+  { to: '/today', label: 'Today', icon: CircleCheckBigIcon },
+  { to: '/habits', label: 'Habits', icon: RepeatIcon },
+  { to: '/calendar', label: 'Calendar', icon: CalendarDaysIcon },
+  { to: '/dashboard', label: 'Dashboard', icon: BarChart3Icon },
+]
+
+export const desktopNavItems: NavItem[] = [
+  ...primaryNavItems,
+  { to: '/settings', label: 'Settings', icon: SettingsIcon },
+]

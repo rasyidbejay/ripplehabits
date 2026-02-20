@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
+import { ThemeSwitcher } from '../components/ThemeSwitcher'
 import { useUserPreferences } from '../hooks/useUserPreferences'
 import { getAnthropicApiKey, setAnthropicApiKey } from '../utils/storage'
 
@@ -78,6 +79,11 @@ export const SettingsPage = () => {
         <p className="mt-1 text-sm text-content-muted">Manage your local user profile and back up app data.</p>
       </div>
 
+      <div className="rounded-2xl border border-border bg-surface-secondary p-5">
+        <p className="mb-3 text-sm font-medium text-content-secondary">Theme</p>
+        <ThemeSwitcher className="w-full justify-center md:w-auto" />
+      </div>
+
       <form onSubmit={handleSave} className="space-y-4 rounded-2xl border border-border bg-surface-secondary p-5">
         <div>
           <label className="text-sm font-medium text-content-secondary" htmlFor="settings-name">
@@ -87,7 +93,7 @@ export const SettingsPage = () => {
             id="settings-name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
+            className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
             required
           />
         </div>
@@ -100,7 +106,7 @@ export const SettingsPage = () => {
             id="settings-timezone"
             value={timezone}
             onChange={(event) => setTimezone(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
+            className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
             required
           />
         </div>
@@ -114,7 +120,7 @@ export const SettingsPage = () => {
             type="password"
             value={anthropicApiKey}
             onChange={(event) => setAnthropicApiKeyValue(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
+            className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
             autoComplete="off"
             spellCheck={false}
           />
@@ -125,7 +131,7 @@ export const SettingsPage = () => {
 
         <button
           type="submit"
-          className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90"
+          className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-surface-secondary transition hover:bg-accent/90"
         >
           Save changes
         </button>

@@ -1,11 +1,25 @@
-import { useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import type { ThemePreference } from '../types/models'
 
 const THEME_KEY = 'ripple:theme'
 const ROOT_KEY = 'ripple:v1'
 
+type ResolvedTheme = 'light' | 'dark'
+
+type ThemeContextValue = {
+  theme: ThemePreference
+  resolvedTheme: ResolvedTheme
+  setTheme: (nextTheme: ThemePreference) => void
+}
+
+const ThemeContext = createContext<ThemeContextValue | null>(null)
+
 const isThemePreference = (value: unknown): value is ThemePreference =>
   value === 'light' || value === 'dark' || value === 'system'
+
+const getSystemTheme = (): ResolvedTheme =>
+  window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 
 const readStoredTheme = (): ThemePreference => {
   const direct = localStorage.getItem(THEME_KEY)
@@ -25,14 +39,11 @@ const readStoredTheme = (): ThemePreference => {
   }
 }
 
-const getSystemTheme = () =>
-  window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const [theme, setTheme] = useState<ThemePreference>(() => readStoredTheme())
+  const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(() => getSystemTheme())
 
-export const useTheme = () => {
-  const [theme, setThemeState] = useState<ThemePreference>(() => readStoredTheme())
-  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(() => getSystemTheme())
-
-  const resolvedTheme = useMemo(
+  const resolvedTheme = useMemo<ResolvedTheme>(
     () => (theme === 'system' ? systemTheme : theme),
     [theme, systemTheme],
   )
@@ -55,9 +66,19 @@ export const useTheme = () => {
     return () => media.removeEventListener('change', listener)
   }, [])
 
-  return {
-    theme,
-    resolvedTheme,
-    setTheme: setThemeState,
+  return (
+    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext)
+
+  if (!context) {
+    throw new Error('useTheme must be used inside ThemeProvider')
   }
+
+  return context
 }

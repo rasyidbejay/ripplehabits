@@ -1,6 +1,6 @@
 import type { ComponentType, SVGProps } from 'react'
-import type { ThemePreference } from '../types/models'
 import { useTheme } from '../hooks/useTheme'
+import type { ThemePreference } from '../types/models'
 import { MonitorIcon, MoonIcon, SunIcon } from './icons'
 
 const OPTIONS: Array<{ value: ThemePreference; label: string; Icon: ComponentType<SVGProps<SVGSVGElement>> }> = [
@@ -26,12 +26,12 @@ export const ThemeSwitcher = ({ className = '' }: ThemeSwitcherProps) => {
             type="button"
             onClick={() => setTheme(value)}
             className={[
-              'flex min-h-10 min-w-10 items-center gap-1.5 rounded-xl px-2.5 text-xs font-medium transition-colors',
-              active ? 'bg-accent text-white' : 'text-content-secondary hover:text-content-primary',
+              'flex min-h-10 min-w-10 items-center gap-1.5 rounded-xl px-2.5 text-xs font-medium transition-all duration-200',
+              active ? 'bg-accent/15 text-accent' : 'text-content-secondary hover:text-content-primary',
             ].join(' ')}
             aria-pressed={active}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className={active ? 'active-icon fill-accent/20 text-accent' : 'text-content-muted'} width={16} height={16} />
             <span>{label}</span>
           </button>
         )

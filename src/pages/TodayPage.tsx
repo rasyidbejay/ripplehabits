@@ -4,7 +4,7 @@ import { TodayHabitItem } from '../components/TodayHabitItem'
 import { useTodayHabits } from '../hooks/useTodayHabits'
 
 export const TodayPage = () => {
-  const { today, todayHabits, getCheckInForHabit, toggleCheckIn, updateNotes } =
+  const { today, todayHabits, checkIns, getCheckInForHabit, toggleCheckIn, updateNotes } =
     useTodayHabits()
 
   return (
@@ -33,6 +33,7 @@ export const TodayPage = () => {
               key={habit.id}
               habit={habit}
               checkIn={getCheckInForHabit(habit.id)}
+              checkIns={checkIns}
               onToggle={toggleCheckIn}
               onSaveNotes={updateNotes}
             />

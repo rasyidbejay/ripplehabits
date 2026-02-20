@@ -1,7 +1,13 @@
 import { lazy, Suspense, useMemo } from 'react'
 import { format, subDays } from 'date-fns'
+import { StreakBadge } from '../components/StreakBadge'
 import { useHabits } from '../hooks/useHabits'
 import { storage } from '../utils/storage'
+import {
+  calculateCurrentStreak,
+  calculateLongestStreak,
+  getStreakMilestone,
+} from '../utils/streaks'
 
 const ChartContainer = lazy(() =>
   import('../components/charts/ChartContainer').then((module) => ({
@@ -19,6 +25,7 @@ const CHART_DAYS = 7
 
 export const InsightsPage = () => {
   const { habits, totalHabits, activeCount, archivedCount, categories } = useHabits()
+  const checkIns = storage.list('checkIns')
 
   const categoryBreakdown = useMemo(() => {
     return categories
@@ -61,6 +68,40 @@ export const InsightsPage = () => {
     })
   }, [habits])
 
+  const topCurrentStreaks = useMemo(() => {
+    return habits
+      .filter((habit) => !habit.isArchived)
+      .map((habit) => {
+        const currentStreak = calculateCurrentStreak(habit.id, checkIns)
+
+        return {
+          habitId: habit.id,
+          name: habit.name,
+          currentStreak,
+          milestone: getStreakMilestone(currentStreak),
+        }
+      })
+      .sort((left, right) => right.currentStreak - left.currentStreak)
+      .slice(0, 5)
+  }, [checkIns, habits])
+
+  const topLongestStreaks = useMemo(() => {
+    return habits
+      .filter((habit) => !habit.isArchived)
+      .map((habit) => ({
+        habitId: habit.id,
+        name: habit.name,
+        longestStreak: calculateLongestStreak(habit.id, checkIns),
+      }))
+      .sort((left, right) => right.longestStreak - left.longestStreak)
+      .slice(0, 5)
+  }, [checkIns, habits])
+
+  const hasAnyStreaks = useMemo(() => {
+    return topCurrentStreaks.some((item) => item.currentStreak > 0)
+      || topLongestStreaks.some((item) => item.longestStreak > 0)
+  }, [topCurrentStreaks, topLongestStreaks])
+
   return (
     <section className="space-y-6">
       <div className="rounded-xl border border-slate-200 bg-white p-6">
@@ -97,6 +138,55 @@ export const InsightsPage = () => {
               <li key={item.category} className="flex items-center justify-between">
                 <span className="capitalize">{item.category}</span>
                 <span className="font-medium">{item.count}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-6">
+        <h3 className="text-lg font-semibold">Top streaks</h3>
+        {!hasAnyStreaks ? (
+          <p className="mt-3 text-sm text-slate-500">
+            Complete habits on the Today page to start building streaks!
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+            {topCurrentStreaks.map((item, index) => (
+              <li key={item.habitId} className="rounded-lg border border-slate-100 px-3 py-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="font-medium text-slate-700">
+                    {index + 1}. {item.name}
+                  </p>
+                  <p className="font-semibold text-slate-700">
+                    🔥 {item.currentStreak} day{item.currentStreak === 1 ? '' : 's'}
+                  </p>
+                </div>
+                {item.milestone ? (
+                  <div className="mt-1">
+                    <StreakBadge milestone={item.milestone} />
+                  </div>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-6">
+        <h3 className="text-lg font-semibold">Longest streaks</h3>
+        {!hasAnyStreaks ? (
+          <p className="mt-3 text-sm text-slate-500">
+            Complete habits on the Today page to start building streaks!
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+            {topLongestStreaks.map((item, index) => (
+              <li key={item.habitId} className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2">
+                <p className="font-medium text-slate-700">
+                  {index + 1}. {item.name}
+                </p>
+                <p className="text-slate-600">Best: {item.longestStreak} days</p>
               </li>
             ))}
           </ul>

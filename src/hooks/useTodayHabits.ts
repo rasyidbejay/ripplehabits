@@ -123,6 +123,7 @@ export const useTodayHabits = () => {
   return {
     today,
     todayHabits,
+    checkIns,
     getCheckInForHabit,
     toggleCheckIn,
     updateNotes,

@@ -1,8 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import type { Habit, HabitCategory, HabitFrequencyType } from '../types/models'
+import type {
+  Habit,
+  HabitCategory,
+  HabitFrequencyType,
+  Weekday,
+} from '../types/models'
 
-type HabitFormValues = Pick<Habit, 'name' | 'description' | 'category' | 'frequencyType'>
+type HabitFormValues = Pick<Habit, 'name' | 'description' | 'category' | 'frequencyType' | 'targetDays'>
 
 type HabitFormProps = {
   onSubmit: (values: HabitFormValues) => void
@@ -29,11 +34,22 @@ const FREQUENCY_OPTIONS: HabitFrequencyType[] = [
   'custom',
 ]
 
+const WEEKDAY_OPTIONS: { label: string; value: Weekday }[] = [
+  { label: 'Mon', value: 'monday' },
+  { label: 'Tue', value: 'tuesday' },
+  { label: 'Wed', value: 'wednesday' },
+  { label: 'Thu', value: 'thursday' },
+  { label: 'Fri', value: 'friday' },
+  { label: 'Sat', value: 'saturday' },
+  { label: 'Sun', value: 'sunday' },
+]
+
 const defaultValues: HabitFormValues = {
   name: '',
   description: '',
   category: 'health',
   frequencyType: 'daily',
+  targetDays: [],
 }
 
 const humanize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1)
@@ -50,6 +66,21 @@ export const HabitForm = ({
   )
   const [values, setValues] = useState<HabitFormValues>(valuesFromProps)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    setValues(valuesFromProps)
+  }, [valuesFromProps])
+
+  const toggleTargetDay = (day: Weekday) => {
+    setValues((current) => {
+      const exists = current.targetDays.includes(day)
+      const targetDays = exists
+        ? current.targetDays.filter((item) => item !== day)
+        : [...current.targetDays, day]
+
+      return { ...current, targetDays }
+    })
+  }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -69,6 +100,7 @@ export const HabitForm = ({
       ...values,
       name: values.name.trim(),
       description: values.description.trim(),
+      targetDays: values.frequencyType === 'weekly' ? values.targetDays : [],
     })
 
     if (!initialValues) {
@@ -149,6 +181,33 @@ export const HabitForm = ({
             ))}
           </select>
         </label>
+
+        {values.frequencyType === 'weekly' ? (
+          <div className="space-y-2 sm:col-span-2">
+            <p className="text-xs font-medium text-slate-600">Target days</p>
+            <div className="flex flex-wrap gap-2">
+              {WEEKDAY_OPTIONS.map((day) => {
+                const selected = values.targetDays.includes(day.value)
+
+                return (
+                  <button
+                    key={day.value}
+                    type="button"
+                    onClick={() => toggleTargetDay(day.value)}
+                    className={[
+                      'rounded-lg border px-3 py-1.5 text-xs font-medium transition',
+                      selected
+                        ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                        : 'border-slate-300 text-slate-700 hover:bg-slate-50',
+                    ].join(' ')}
+                  >
+                    {day.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {error ? <p className="text-xs text-rose-600">{error}</p> : null}

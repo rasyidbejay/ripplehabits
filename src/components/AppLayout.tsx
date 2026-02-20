@@ -4,6 +4,7 @@ const navItems = [
   { to: '/', label: 'Home' },
   { to: '/today', label: 'Today' },
   { to: '/habits', label: 'Habits' },
+  { to: '/calendar', label: 'Calendar' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/settings', label: 'Settings' },
 ]
@@ -14,25 +15,27 @@ export const AppLayout = () => {
       <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3">
           <p className="text-lg font-semibold tracking-tight text-indigo-600">Ripple</p>
-          <nav className="flex gap-1 rounded-xl bg-slate-100 p-1 text-sm">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === '/'}
-                className={({ isActive }) =>
-                  [
-                    'rounded-lg px-3 py-1.5 transition',
-                    isActive
-                      ? 'bg-white text-indigo-600 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900',
-                  ].join(' ')
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
+          <div className="overflow-x-auto">
+            <nav className="flex w-max gap-1 rounded-xl bg-slate-100 p-1 text-sm">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.to === '/'}
+                  className={({ isActive }) =>
+                    [
+                      'rounded-lg px-3 py-1.5 transition',
+                      isActive
+                        ? 'bg-white text-indigo-600 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900',
+                    ].join(' ')
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
+          </div>
         </div>
       </header>
 

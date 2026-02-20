@@ -7,6 +7,7 @@ import { HabitsPage } from './pages/HabitsPage'
 import { Home } from './pages/Home'
 import { NotFound } from './pages/NotFound'
 import { Settings } from './pages/Settings'
+import { TodayPage } from './pages/TodayPage'
 
 const detectTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 
@@ -19,6 +20,7 @@ const App = () => {
         <Route element={<AppLayout />}>
           <Route path="/" element={user ? <Home user={user} /> : <Navigate to="/settings" replace />} />
           <Route path="/habits" element={<HabitsPage />} />
+          <Route path="/today" element={<TodayPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route
             path="/settings"

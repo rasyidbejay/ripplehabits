@@ -8,20 +8,20 @@ type HomeProps = {
 export const Home = ({ user }: HomeProps) => {
   return (
     <section className="space-y-4">
-      <p className="text-xs uppercase tracking-[0.2em] text-indigo-500">Home</p>
+      <p className="text-xs uppercase tracking-[0.2em] text-accent">Home</p>
       <h1 className="text-2xl font-semibold tracking-tight">Welcome back, {user.name}</h1>
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-content-secondary">
         Your profile is stored locally on this device. No secrets are collected.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <Link to="/habits" className="rounded-xl border border-slate-200 p-3 text-sm transition hover:border-indigo-300 hover:bg-indigo-50">
+        <Link to="/habits" className="rounded-xl border border-border p-3 text-sm transition hover:border-accent/40 hover:bg-accent-light">
           Go to Habits
         </Link>
-        <Link to="/dashboard" className="rounded-xl border border-slate-200 p-3 text-sm transition hover:border-indigo-300 hover:bg-indigo-50">
+        <Link to="/dashboard" className="rounded-xl border border-border p-3 text-sm transition hover:border-accent/40 hover:bg-accent-light">
           Open Dashboard
         </Link>
-        <Link to="/settings" className="rounded-xl border border-slate-200 p-3 text-sm transition hover:border-indigo-300 hover:bg-indigo-50">
+        <Link to="/settings" className="rounded-xl border border-border p-3 text-sm transition hover:border-accent/40 hover:bg-accent-light">
           Manage Settings
         </Link>
       </div>

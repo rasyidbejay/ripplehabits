@@ -111,23 +111,23 @@ export const HabitForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-3 rounded-xl border border-slate-200 bg-white p-4"
+      className="space-y-3 rounded-xl border border-border bg-surface-secondary p-4"
     >
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="space-y-1 sm:col-span-2">
-          <span className="text-xs font-medium text-slate-600">Name *</span>
+          <span className="text-xs font-medium text-content-secondary">Name *</span>
           <input
             value={values.name}
             onChange={(event) =>
               setValues((current) => ({ ...current, name: event.target.value }))
             }
             placeholder="Read for 20 minutes"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none ring-indigo-500 focus:ring-2"
+            className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none ring-accent focus:ring-2"
           />
         </label>
 
         <label className="space-y-1 sm:col-span-2">
-          <span className="text-xs font-medium text-slate-600">Description</span>
+          <span className="text-xs font-medium text-content-secondary">Description</span>
           <textarea
             value={values.description}
             onChange={(event) =>
@@ -138,12 +138,12 @@ export const HabitForm = ({
             }
             rows={2}
             placeholder="Optional notes about this habit"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none ring-indigo-500 focus:ring-2"
+            className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none ring-accent focus:ring-2"
           />
         </label>
 
         <label className="space-y-1">
-          <span className="text-xs font-medium text-slate-600">Category *</span>
+          <span className="text-xs font-medium text-content-secondary">Category *</span>
           <select
             value={values.category}
             onChange={(event) =>
@@ -152,7 +152,7 @@ export const HabitForm = ({
                 category: event.target.value as HabitCategory,
               }))
             }
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none ring-indigo-500 focus:ring-2"
+            className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none ring-accent focus:ring-2"
           >
             {CATEGORY_OPTIONS.map((option) => (
               <option key={option} value={option}>
@@ -163,7 +163,7 @@ export const HabitForm = ({
         </label>
 
         <label className="space-y-1">
-          <span className="text-xs font-medium text-slate-600">Frequency *</span>
+          <span className="text-xs font-medium text-content-secondary">Frequency *</span>
           <select
             value={values.frequencyType}
             onChange={(event) =>
@@ -172,7 +172,7 @@ export const HabitForm = ({
                 frequencyType: event.target.value as HabitFrequencyType,
               }))
             }
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none ring-indigo-500 focus:ring-2"
+            className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none ring-accent focus:ring-2"
           >
             {FREQUENCY_OPTIONS.map((option) => (
               <option key={option} value={option}>
@@ -184,7 +184,7 @@ export const HabitForm = ({
 
         {values.frequencyType === 'weekly' ? (
           <div className="space-y-2 sm:col-span-2">
-            <p className="text-xs font-medium text-slate-600">Target days</p>
+            <p className="text-xs font-medium text-content-secondary">Target days</p>
             <div className="flex flex-wrap gap-2">
               {WEEKDAY_OPTIONS.map((day) => {
                 const selected = values.targetDays.includes(day.value)
@@ -197,8 +197,8 @@ export const HabitForm = ({
                     className={[
                       'rounded-lg border px-3 py-1.5 text-xs font-medium transition',
                       selected
-                        ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                        : 'border-slate-300 text-slate-700 hover:bg-slate-50',
+                        ? 'border-accent bg-accent-light text-accent'
+                        : 'border-border text-content-secondary hover:bg-surface-tertiary',
                     ].join(' ')}
                   >
                     {day.label}
@@ -215,7 +215,7 @@ export const HabitForm = ({
       <div className="flex items-center gap-2">
         <button
           type="submit"
-          className="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+          className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white hover:bg-accent/90"
         >
           {submitLabel}
         </button>
@@ -223,7 +223,7 @@ export const HabitForm = ({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
+            className="rounded-lg border border-border px-3 py-2 text-sm text-content-secondary hover:bg-surface-tertiary"
           >
             Cancel
           </button>

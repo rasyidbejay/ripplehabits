@@ -9,19 +9,19 @@ export const TodayPage = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-xl border border-slate-200 bg-white p-4">
-        <h2 className="text-lg font-semibold text-slate-900">Today</h2>
-        <p className="mt-1 text-sm text-slate-500">
+      <div className="rounded-xl border border-border bg-surface-secondary p-4">
+        <h2 className="text-lg font-semibold text-content-primary">Today</h2>
+        <p className="mt-1 text-sm text-content-muted">
           {format(today, 'EEEE, MMMM d, yyyy')} · {todayHabits.length} active habits
         </p>
       </div>
 
       {todayHabits.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">
+        <div className="rounded-xl border border-dashed border-border bg-surface-tertiary p-6 text-center text-sm text-content-muted">
           <p>No habits scheduled for today.</p>
           <Link
             to="/habits"
-            className="mt-3 inline-flex text-sm font-medium text-indigo-600 hover:text-indigo-700"
+            className="mt-3 inline-flex text-sm font-medium text-accent hover:text-accent"
           >
             Create your first habit →
           </Link>

@@ -30,14 +30,14 @@ const getBadgeClassName = (threshold: number) => {
   }
 
   if (threshold >= 14) {
-    return 'bg-indigo-100 text-indigo-700'
+    return 'bg-accent-light text-accent'
   }
 
   if (threshold >= 7) {
     return 'bg-blue-100 text-blue-700'
   }
 
-  return 'bg-slate-100 text-slate-700'
+  return 'bg-surface-tertiary text-content-secondary'
 }
 
 export const StreakBadge = ({ milestone }: StreakBadgeProps) => {

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
+import { ThemeSwitcher } from '../components/ThemeSwitcher'
 import type { UserProfile } from '../types/user'
 
 type SettingsProps = {
@@ -85,53 +86,58 @@ export const Settings = ({ user, onSave, onExport, onImport }: SettingsProps) =>
   return (
     <section className="space-y-5">
       <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-indigo-500">Settings</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">Profile & Local Data</h1>
+        <p className="text-xs uppercase tracking-[0.2em] text-accent">Settings</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight md:text-2xl">Profile & Local Data</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <label className="block text-sm font-medium text-slate-700" htmlFor="name">
+      <div className="rounded-2xl border border-border bg-surface-secondary p-4">
+        <p className="mb-3 text-sm font-medium text-content-secondary">Theme</p>
+        <ThemeSwitcher className="w-full justify-center md:w-auto" />
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-border bg-surface-secondary p-4">
+        <label className="block text-sm font-medium text-content-secondary" htmlFor="name">
           Name
           <input
             id="name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+            className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2.5 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
         </label>
 
-        <label className="block text-sm font-medium text-slate-700" htmlFor="timezone">
+        <label className="block text-sm font-medium text-content-secondary" htmlFor="timezone">
           Timezone
           <input
             id="timezone"
             value={timezone}
             onChange={(event) => setTimezone(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+            className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2.5 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
         </label>
 
         <button
           type="submit"
-          className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500"
+          className="min-h-11 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90"
         >
           Save profile
         </button>
       </form>
 
-      <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
-        <p className="text-sm text-slate-700">Export or import all local Ripple data as JSON.</p>
+      <div className="space-y-3 rounded-2xl border border-border bg-surface-tertiary p-4">
+        <p className="text-sm text-content-secondary">Export or import all local Ripple data as JSON.</p>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={handleExport}
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm transition hover:border-indigo-300 hover:text-indigo-600"
+            className="min-h-11 rounded-xl border border-border bg-surface-secondary px-3 py-2 text-sm transition hover:border-accent/40 hover:text-accent"
           >
             Export JSON backup
           </button>
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm transition hover:border-indigo-300 hover:text-indigo-600"
+            className="min-h-11 rounded-xl border border-border bg-surface-secondary px-3 py-2 text-sm transition hover:border-accent/40 hover:text-accent"
           >
             Import JSON backup
           </button>

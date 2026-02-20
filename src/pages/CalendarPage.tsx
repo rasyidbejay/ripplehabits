@@ -140,11 +140,11 @@ export const CalendarPage = () => {
 
   return (
     <section className="space-y-4">
-      <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="rounded-xl border border-border bg-surface-secondary p-4">
         <div className="mb-4 flex items-center justify-between gap-3">
           <button
             type="button"
-            className="rounded border border-slate-300 px-3 py-1 text-sm"
+            className="rounded border border-border px-3 py-1 text-sm"
             onClick={() => setCurrentMonth((month: Date) => subMonths(month, 1))}
           >
             ← Prev
@@ -154,14 +154,14 @@ export const CalendarPage = () => {
 
           <button
             type="button"
-            className="rounded border border-slate-300 px-3 py-1 text-sm"
+            className="rounded border border-border px-3 py-1 text-sm"
             onClick={() => setCurrentMonth((month: Date) => addMonths(month, 1))}
           >
             Next →
           </button>
         </div>
 
-        <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-500 sm:gap-2">
+        <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-content-muted sm:gap-2">
           {weekdayLabels.map((label) => (
             <div key={label} className="py-1">
               {label}
@@ -179,16 +179,16 @@ export const CalendarPage = () => {
                 className={[
                   'min-h-16 rounded border p-1 text-left text-sm transition sm:min-h-20 sm:p-2',
                   isInMonth
-                    ? 'border-slate-200 bg-white text-slate-900 hover:bg-slate-50'
-                    : 'border-slate-100 bg-slate-50 text-slate-400',
-                  isToday(day) ? 'ring-2 ring-indigo-400 ring-offset-1' : '',
+                    ? 'border-border bg-surface-secondary text-content-primary hover:bg-surface-tertiary'
+                    : 'border-border/60 bg-surface-tertiary text-content-muted',
+                  isToday(day) ? 'ring-2 ring-accent ring-offset-1' : '',
                 ].join(' ')}
                 onClick={() => setSelectedDate(day)}
               >
                 <div className="flex h-full flex-col">
-                  <span className={isToday(day) ? 'font-semibold text-indigo-700' : ''}>{format(day, 'd')}</span>
+                  <span className={isToday(day) ? 'font-semibold text-accent' : ''}>{format(day, 'd')}</span>
                   {hasDot ? (
-                    <span className="mt-auto inline-block h-1.5 w-1.5 rounded-full bg-indigo-600" />
+                    <span className="mt-auto inline-block h-1.5 w-1.5 rounded-full bg-accent" />
                   ) : null}
                 </div>
               </button>
@@ -199,21 +199,21 @@ export const CalendarPage = () => {
 
       {selectedDate ? (
         <div
-          className="fixed inset-0 z-20 flex items-center justify-center bg-slate-900/40 p-4"
+          className="fixed inset-0 z-20 flex items-center justify-center bg-black/40 p-4"
           onClick={(event) => {
             if (event.target === event.currentTarget) {
               setSelectedDate(null)
             }
           }}
         >
-          <div className="w-full max-w-md rounded-lg bg-white p-4 shadow-lg">
+          <div className="w-full max-w-md rounded-lg bg-surface-secondary p-4 shadow-lg">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-base font-semibold">
                 {format(selectedDate, 'EEEE, MMMM d, yyyy')}
               </h3>
               <button
                 type="button"
-                className="rounded border border-slate-300 px-2 py-1 text-sm"
+                className="rounded border border-border px-2 py-1 text-sm"
                 onClick={() => setSelectedDate(null)}
               >
                 ✕
@@ -221,16 +221,16 @@ export const CalendarPage = () => {
             </div>
 
             {selectedDateHabitStatuses.length === 0 ? (
-              <p className="text-sm text-slate-500">No habits scheduled for this day.</p>
+              <p className="text-sm text-content-muted">No habits scheduled for this day.</p>
             ) : (
               <ul className="space-y-2 text-sm">
                 {selectedDateHabitStatuses.map(({ habit, checkIn }) => (
-                  <li key={habit.id} className="rounded border border-slate-200 p-2">
+                  <li key={habit.id} className="rounded border border-border p-2">
                     <p className="font-medium">{habit.name}</p>
-                    <p className="text-slate-600">
+                    <p className="text-content-secondary">
                       Status: {checkIn?.completed ? '✅ done' : '❌ missed'}
                     </p>
-                    {checkIn?.notes ? <p className="text-slate-500">Notes: {checkIn.notes}</p> : null}
+                    {checkIn?.notes ? <p className="text-content-muted">Notes: {checkIn.notes}</p> : null}
                   </li>
                 ))}
               </ul>

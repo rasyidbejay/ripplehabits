@@ -1,49 +1,33 @@
 import { NavLink, Outlet } from 'react-router-dom'
-
-const navItems = [
-  { to: '/', label: 'Home' },
-  { to: '/today', label: 'Today' },
-  { to: '/habits', label: 'Habits' },
-  { to: '/calendar', label: 'Calendar' },
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/settings', label: 'Settings' },
-]
+import { DesktopNav } from './DesktopNav'
+import { MobileDock } from './MobileDock'
+import { SettingsIcon } from './icons'
 
 export const AppLayout = () => {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3">
-          <p className="text-lg font-semibold tracking-tight text-indigo-600">Ripple</p>
-          <div className="overflow-x-auto">
-            <nav className="flex w-max gap-1 rounded-xl bg-slate-100 p-1 text-sm">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === '/'}
-                  className={({ isActive }) =>
-                    [
-                      'rounded-lg px-3 py-1.5 transition',
-                      isActive
-                        ? 'bg-white text-indigo-600 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900',
-                    ].join(' ')
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </nav>
-          </div>
+    <div className="min-h-screen bg-surface-primary text-content-primary">
+      <header className="hidden border-b border-border/80 bg-surface-secondary/80 backdrop-blur md:block">
+        <DesktopNav />
+      </header>
+
+      <header className="sticky top-0 z-20 border-b border-border/60 bg-surface-primary/90 px-4 py-3 backdrop-blur md:hidden" style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold tracking-tight text-accent">Ripple</h1>
+          <NavLink to="/settings" className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-surface-secondary text-content-secondary">
+            <SettingsIcon className="h-5 w-5" />
+          </NavLink>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl px-4 py-6">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 md:p-6">
-          <Outlet />
+      <main className="pb-28 md:pb-8">
+        <div className="mx-auto w-full max-w-5xl px-4 py-5 md:px-6 md:py-8">
+          <div className="rounded-3xl border border-border bg-surface-secondary p-4 shadow-sm md:p-6">
+            <Outlet />
+          </div>
         </div>
       </main>
+
+      <MobileDock />
     </div>
   )
 }

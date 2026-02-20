@@ -4,6 +4,7 @@ import { HabitCard } from '../components/HabitCard'
 import { HabitForm } from '../components/HabitForm'
 import { useHabits } from '../hooks/useHabits'
 import type { Habit, HabitCategory } from '../types/models'
+import { storage } from '../utils/storage'
 
 type CategoryFilter = HabitCategory | 'all'
 type ArchiveFilter = 'active' | 'archived' | 'all'
@@ -50,6 +51,8 @@ export const HabitsPage = () => {
       return categoryMatch && archiveMatch
     })
   }, [habits, categoryFilter, archiveFilter])
+
+  const checkIns = storage.list('checkIns')
 
   const handleCreateSubmit = (values: Parameters<typeof createHabit>[0]) => {
     createHabit(values)
@@ -147,6 +150,7 @@ export const HabitsPage = () => {
               <HabitCard
                 key={habit.id}
                 habit={habit}
+                checkIns={checkIns}
                 onEdit={(nextHabit) => {
                   setShowCreateForm(false)
                   setEditingHabit(nextHabit)

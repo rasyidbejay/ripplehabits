@@ -1,18 +1,33 @@
 import type { CheckIn, Habit } from '../types/models'
+import { calculateCurrentStreak, getStreakMilestone } from '../utils/streaks'
+import { StreakBadge } from './StreakBadge'
 
 type TodayHabitItemProps = {
   habit: Habit
   checkIn?: CheckIn
+  checkIns: CheckIn[]
   onToggle: (habitId: Habit['id']) => void
   onSaveNotes: (habitId: Habit['id'], notes: string) => void
+}
+
+const getStreakLabel = (streakCount: number) => {
+  if (streakCount <= 0) {
+    return 'No streak yet'
+  }
+
+  return `🔥 ${streakCount} day${streakCount === 1 ? '' : 's'}`
 }
 
 export const TodayHabitItem = ({
   habit,
   checkIn,
+  checkIns,
   onToggle,
   onSaveNotes,
 }: TodayHabitItemProps) => {
+  const currentStreak = calculateCurrentStreak(habit.id, checkIns)
+  const milestone = getStreakMilestone(currentStreak)
+
   return (
     <article
       className={[
@@ -35,7 +50,10 @@ export const TodayHabitItem = ({
           {habit.description ? (
             <p className="mt-1 text-sm text-slate-600">{habit.description}</p>
           ) : null}
-          <p className="mt-2 text-xs text-slate-500">Streak: 0 days (coming soon)</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <p className="text-xs text-slate-500">{getStreakLabel(currentStreak)}</p>
+            {milestone ? <StreakBadge milestone={milestone} /> : null}
+          </div>
         </div>
 
         <button

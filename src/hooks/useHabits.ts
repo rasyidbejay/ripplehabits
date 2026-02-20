@@ -7,10 +7,11 @@ type CreateHabitInput = {
   description: string
   category: HabitCategory
   frequencyType: HabitFrequencyType
+  targetDays: Habit['targetDays']
 }
 
 type UpdateHabitInput = Partial<
-  Pick<Habit, 'name' | 'description' | 'category' | 'frequencyType' | 'isArchived'>
+  Pick<Habit, 'name' | 'description' | 'category' | 'frequencyType' | 'targetDays' | 'isArchived'>
 >
 
 const DEFAULT_COLOR = '#6366f1'
@@ -19,7 +20,7 @@ const DEFAULT_ICON = 'sparkles'
 export const useHabits = () => {
   const [habits, setHabits] = useState<Habit[]>(() => storage.get('habits') ?? [])
 
-  const createHabit = ({ name, description, category, frequencyType }: CreateHabitInput) => {
+  const createHabit = ({ name, description, category, frequencyType, targetDays }: CreateHabitInput) => {
     const trimmedName = name.trim()
     const trimmedDescription = description.trim()
 
@@ -35,7 +36,7 @@ export const useHabits = () => {
       color: DEFAULT_COLOR,
       icon: DEFAULT_ICON,
       frequencyType,
-      targetDays: [],
+      targetDays: frequencyType === 'weekly' ? targetDays : [],
       createdDate: new Date().toISOString(),
       isArchived: false,
     }
@@ -58,6 +59,10 @@ export const useHabits = () => {
           updates.description !== undefined
             ? updates.description.trim()
             : habit.description,
+        targetDays:
+          updates.targetDays !== undefined
+            ? updates.targetDays
+            : habit.targetDays,
       }),
     )
 

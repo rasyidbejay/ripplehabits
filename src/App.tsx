@@ -3,7 +3,7 @@ import { AppLayout } from './components/AppLayout'
 import { OnboardingModal } from './components/OnboardingModal'
 import { useLocalUser } from './hooks/useLocalUser'
 import { Dashboard } from './pages/Dashboard'
-import { Habits } from './pages/Habits'
+import { HabitsPage } from './pages/HabitsPage'
 import { Home } from './pages/Home'
 import { NotFound } from './pages/NotFound'
 import { Settings } from './pages/Settings'
@@ -18,7 +18,7 @@ const App = () => {
       <Routes>
         <Route element={<AppLayout />}>
           <Route path="/" element={user ? <Home user={user} /> : <Navigate to="/settings" replace />} />
-          <Route path="/habits" element={<Habits />} />
+          <Route path="/habits" element={<HabitsPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route
             path="/settings"

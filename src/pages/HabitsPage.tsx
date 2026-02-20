@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { HabitCard } from '../components/HabitCard'
 import { HabitForm } from '../components/HabitForm'
 import { useHabits } from '../hooks/useHabits'
@@ -36,6 +37,8 @@ export const HabitsPage = () => {
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all')
   const [archiveFilter, setArchiveFilter] = useState<ArchiveFilter>('active')
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null)
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [habitToDelete, setHabitToDelete] = useState<Habit | null>(null)
 
   const filteredHabits = useMemo(() => {
     return habits.filter((habit) => {
@@ -48,6 +51,11 @@ export const HabitsPage = () => {
     })
   }, [habits, categoryFilter, archiveFilter])
 
+  const handleCreateSubmit = (values: Parameters<typeof createHabit>[0]) => {
+    createHabit(values)
+    setShowCreateForm(false)
+  }
+
   return (
     <section className="space-y-6">
       <div className="rounded-xl border border-slate-200 bg-white p-4">
@@ -57,32 +65,27 @@ export const HabitsPage = () => {
           <p>Active: <span className="font-semibold">{activeCount}</span></p>
           <p>Archived: <span className="font-semibold">{archivedCount}</span></p>
         </div>
+        <div className="mt-4">
+          {showCreateForm ? (
+            <HabitForm
+              submitLabel="Create habit"
+              onCancel={() => setShowCreateForm(false)}
+              onSubmit={handleCreateSubmit}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingHabit(null)
+                setShowCreateForm(true)
+              }}
+              className="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+            >
+              Add Habit
+            </button>
+          )}
+        </div>
       </div>
-
-      <HabitForm
-        key={editingHabit?.id ?? 'create'}
-        initialValues={
-          editingHabit
-            ? {
-                name: editingHabit.name,
-                description: editingHabit.description,
-                category: editingHabit.category,
-                frequencyType: editingHabit.frequencyType,
-              }
-            : undefined
-        }
-        submitLabel={editingHabit ? 'Update habit' : 'Add habit'}
-        onCancel={editingHabit ? () => setEditingHabit(null) : undefined}
-        onSubmit={(values) => {
-          if (editingHabit) {
-            updateHabit(editingHabit.id, values)
-            setEditingHabit(null)
-            return
-          }
-
-          createHabit(values)
-        }}
-      />
 
       <div className="rounded-xl border border-slate-200 bg-white p-4">
         <div className="grid gap-3 sm:grid-cols-2">
@@ -108,8 +111,8 @@ export const HabitsPage = () => {
               onChange={(event) => setArchiveFilter(event.target.value as ArchiveFilter)}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
             >
-              <option value="active">Active only</option>
-              <option value="archived">Archived only</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
               <option value="all">All</option>
             </select>
           </label>
@@ -122,24 +125,74 @@ export const HabitsPage = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {filteredHabits.map((habit) => (
-            <HabitCard
-              key={habit.id}
-              habit={habit}
-              onEdit={setEditingHabit}
-              onDelete={deleteHabit}
-              onArchiveToggle={(habitId, shouldArchive) => {
-                if (shouldArchive) {
-                  archiveHabit(habitId)
-                  return
-                }
+          {filteredHabits.map((habit) =>
+            editingHabit?.id === habit.id ? (
+              <HabitForm
+                key={habit.id}
+                initialValues={{
+                  name: habit.name,
+                  description: habit.description,
+                  category: habit.category,
+                  frequencyType: habit.frequencyType,
+                  targetDays: habit.targetDays,
+                }}
+                submitLabel="Save changes"
+                onCancel={() => setEditingHabit(null)}
+                onSubmit={(values) => {
+                  updateHabit(habit.id, values)
+                  setEditingHabit(null)
+                }}
+              />
+            ) : (
+              <HabitCard
+                key={habit.id}
+                habit={habit}
+                onEdit={(nextHabit) => {
+                  setShowCreateForm(false)
+                  setEditingHabit(nextHabit)
+                }}
+                onDelete={(habitId) => {
+                  const foundHabit = habits.find((candidate) => candidate.id === habitId) ?? null
+                  setHabitToDelete(foundHabit)
+                }}
+                onArchiveToggle={(habitId, shouldArchive) => {
+                  if (shouldArchive) {
+                    archiveHabit(habitId)
+                    return
+                  }
 
-                unarchiveHabit(habitId)
-              }}
-            />
-          ))}
+                  unarchiveHabit(habitId)
+                }}
+              />
+            ),
+          )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={habitToDelete !== null}
+        title="Delete Habit"
+        confirmLabel="Delete"
+        onCancel={() => setHabitToDelete(null)}
+        onConfirm={() => {
+          if (!habitToDelete) {
+            return
+          }
+
+          deleteHabit(habitToDelete.id)
+          if (editingHabit?.id === habitToDelete.id) {
+            setEditingHabit(null)
+          }
+          setHabitToDelete(null)
+        }}
+      >
+        {habitToDelete ? (
+          <>
+            Are you sure you want to delete <span className="font-semibold">{habitToDelete.name}</span>? This action
+            cannot be undone.
+          </>
+        ) : null}
+      </ConfirmDialog>
     </section>
   )
 }

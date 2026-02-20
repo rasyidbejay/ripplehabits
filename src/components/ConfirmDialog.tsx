@@ -24,22 +24,22 @@ export const ConfirmDialog = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl">
-        <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-        <p className="mt-2 text-sm text-slate-600">{children}</p>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-4 pb-0 md:items-center md:pb-4">
+      <div className="w-full max-w-md rounded-t-2xl border border-border bg-surface-secondary p-5 shadow-xl md:rounded-2xl">
+        <h2 className="text-lg font-semibold text-content-primary">{title}</h2>
+        <p className="mt-2 text-sm text-content-secondary">{children}</p>
         <div className="mt-5 flex justify-end gap-2">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
+            className="min-h-11 rounded-lg border border-border px-3 py-2 text-sm text-content-secondary hover:bg-surface-tertiary"
           >
             {cancelLabel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="rounded-lg bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-500"
+            className="min-h-11 rounded-lg bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-500"
           >
             {confirmLabel}
           </button>

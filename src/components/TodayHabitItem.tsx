@@ -34,7 +34,7 @@ export const TodayHabitItem = ({
         'space-y-3 rounded-xl border p-4 transition',
         checkIn?.completed
           ? 'border-emerald-200 bg-emerald-50/60'
-          : 'border-slate-200 bg-white',
+          : 'border-border bg-surface-secondary',
       ].join(' ')}
     >
       <div className="flex items-start justify-between gap-3">
@@ -42,16 +42,16 @@ export const TodayHabitItem = ({
           <h3
             className={[
               'text-base font-semibold',
-              checkIn?.completed ? 'text-emerald-800 line-through' : 'text-slate-900',
+              checkIn?.completed ? 'text-emerald-800 line-through' : 'text-content-primary',
             ].join(' ')}
           >
             {habit.name}
           </h3>
           {habit.description ? (
-            <p className="mt-1 text-sm text-slate-600">{habit.description}</p>
+            <p className="mt-1 text-sm text-content-secondary">{habit.description}</p>
           ) : null}
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <p className="text-xs text-slate-500">{getStreakLabel(currentStreak)}</p>
+            <p className="text-xs text-content-muted">{getStreakLabel(currentStreak)}</p>
             {milestone ? <StreakBadge milestone={milestone} /> : null}
           </div>
         </div>
@@ -63,7 +63,7 @@ export const TodayHabitItem = ({
             'rounded-lg px-3 py-1.5 text-sm font-medium transition',
             checkIn?.completed
               ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-              : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+              : 'bg-surface-tertiary text-content-secondary hover:bg-surface-tertiary/80',
           ].join(' ')}
         >
           {checkIn?.completed ? 'Completed' : 'Mark done'}
@@ -71,13 +71,13 @@ export const TodayHabitItem = ({
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-medium text-slate-600">Notes (optional)</label>
+        <label className="text-xs font-medium text-content-secondary">Notes (optional)</label>
         <textarea
           key={`${habit.id}-${checkIn?.notes ?? ''}`}
           defaultValue={checkIn?.notes ?? ''}
           onBlur={(event) => onSaveNotes(habit.id, event.target.value)}
           rows={2}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none ring-indigo-500 focus:ring-2"
+          className="w-full rounded-lg border border-border px-3 py-2 text-sm outline-none ring-accent focus:ring-2"
           placeholder="Add context for today's check-in"
         />
       </div>

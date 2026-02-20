@@ -104,9 +104,9 @@ export const InsightsPage = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-xl border border-slate-200 bg-white p-6">
+      <div className="rounded-xl border border-border bg-surface-secondary p-6">
         <h2 className="text-xl font-semibold">Overview</h2>
-        <ul className="mt-3 space-y-2 text-sm text-slate-600">
+        <ul className="mt-3 space-y-2 text-sm text-content-secondary">
           <li>Total habits: {totalHabits}</li>
           <li>Active habits: {activeCount}</li>
           <li>Archived habits: {archivedCount}</li>
@@ -115,7 +115,7 @@ export const InsightsPage = () => {
 
       <Suspense
         fallback={
-          <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+          <div className="rounded-xl border border-border bg-surface-secondary p-6 text-sm text-content-muted">
             Loading chart...
           </div>
         }
@@ -128,12 +128,12 @@ export const InsightsPage = () => {
         </ChartContainer>
       </Suspense>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-6">
+      <div className="rounded-xl border border-border bg-surface-secondary p-6">
         <h3 className="text-lg font-semibold">Category breakdown</h3>
         {categoryBreakdown.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-500">No habits yet.</p>
+          <p className="mt-3 text-sm text-content-muted">No habits yet.</p>
         ) : (
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+          <ul className="mt-3 space-y-2 text-sm text-content-secondary">
             {categoryBreakdown.map((item) => (
               <li key={item.category} className="flex items-center justify-between">
                 <span className="capitalize">{item.category}</span>
@@ -144,21 +144,21 @@ export const InsightsPage = () => {
         )}
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-6">
+      <div className="rounded-xl border border-border bg-surface-secondary p-6">
         <h3 className="text-lg font-semibold">Top streaks</h3>
         {!hasAnyStreaks ? (
-          <p className="mt-3 text-sm text-slate-500">
+          <p className="mt-3 text-sm text-content-muted">
             Complete habits on the Today page to start building streaks!
           </p>
         ) : (
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+          <ul className="mt-3 space-y-2 text-sm text-content-secondary">
             {topCurrentStreaks.map((item, index) => (
-              <li key={item.habitId} className="rounded-lg border border-slate-100 px-3 py-2">
+              <li key={item.habitId} className="rounded-lg border border-border/60 px-3 py-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-medium text-slate-700">
+                  <p className="font-medium text-content-secondary">
                     {index + 1}. {item.name}
                   </p>
-                  <p className="font-semibold text-slate-700">
+                  <p className="font-semibold text-content-secondary">
                     🔥 {item.currentStreak} day{item.currentStreak === 1 ? '' : 's'}
                   </p>
                 </div>
@@ -173,20 +173,20 @@ export const InsightsPage = () => {
         )}
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-6">
+      <div className="rounded-xl border border-border bg-surface-secondary p-6">
         <h3 className="text-lg font-semibold">Longest streaks</h3>
         {!hasAnyStreaks ? (
-          <p className="mt-3 text-sm text-slate-500">
+          <p className="mt-3 text-sm text-content-muted">
             Complete habits on the Today page to start building streaks!
           </p>
         ) : (
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+          <ul className="mt-3 space-y-2 text-sm text-content-secondary">
             {topLongestStreaks.map((item, index) => (
-              <li key={item.habitId} className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2">
-                <p className="font-medium text-slate-700">
+              <li key={item.habitId} className="flex items-center justify-between rounded-lg border border-border/60 px-3 py-2">
+                <p className="font-medium text-content-secondary">
                   {index + 1}. {item.name}
                 </p>
-                <p className="text-slate-600">Best: {item.longestStreak} days</p>
+                <p className="text-content-secondary">Best: {item.longestStreak} days</p>
               </li>
             ))}
           </ul>

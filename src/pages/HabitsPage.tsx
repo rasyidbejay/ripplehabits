@@ -61,9 +61,9 @@ export const HabitsPage = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-xl border border-slate-200 bg-white p-4">
-        <h2 className="text-lg font-semibold text-slate-900">Habit management</h2>
-        <p className="mt-1 text-sm text-slate-500">Create habits and keep your list organized with archive controls.</p>
+      <div className="rounded-xl border border-border bg-surface-secondary p-4">
+        <h2 className="text-lg font-semibold text-content-primary">Habit management</h2>
+        <p className="mt-1 text-sm text-content-muted">Create habits and keep your list organized with archive controls.</p>
         <div className="mt-3 flex gap-3 text-sm">
           <p>Active: <span className="font-semibold">{activeCount}</span></p>
           <p>Archived: <span className="font-semibold">{archivedCount}</span></p>
@@ -82,7 +82,7 @@ export const HabitsPage = () => {
                 setEditingHabit(null)
                 setShowCreateForm(true)
               }}
-              className="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+              className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white hover:bg-accent/90"
             >
               Add Habit
             </button>
@@ -90,14 +90,14 @@ export const HabitsPage = () => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="rounded-xl border border-border bg-surface-secondary p-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="space-y-1">
-            <span className="text-xs font-medium text-slate-600">Category filter</span>
+            <span className="text-xs font-medium text-content-secondary">Category filter</span>
             <select
               value={categoryFilter}
               onChange={(event) => setCategoryFilter(event.target.value as CategoryFilter)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
             >
               {CATEGORY_FILTERS.map((option) => (
                 <option key={option} value={option}>
@@ -108,11 +108,11 @@ export const HabitsPage = () => {
           </label>
 
           <label className="space-y-1">
-            <span className="text-xs font-medium text-slate-600">Status filter</span>
+            <span className="text-xs font-medium text-content-secondary">Status filter</span>
             <select
               value={archiveFilter}
               onChange={(event) => setArchiveFilter(event.target.value as ArchiveFilter)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
             >
               <option value="active">Active</option>
               <option value="archived">Archived</option>
@@ -123,7 +123,7 @@ export const HabitsPage = () => {
       </div>
 
       {filteredHabits.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">
+        <div className="rounded-xl border border-dashed border-border bg-surface-tertiary p-6 text-center text-sm text-content-muted">
           No habits match the current filters.
         </div>
       ) : (

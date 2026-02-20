@@ -29,17 +29,17 @@ export const HabitCard = ({
   const hasPersonalBest = currentStreak > 0 && currentStreak === longestStreak
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <article className="rounded-xl border border-border bg-surface-secondary p-4 shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h3 className="text-base font-semibold text-slate-900">{habit.name}</h3>
-          <p className="mt-1 text-xs text-slate-500">{humanize(habit.category)} · {humanize(habit.frequencyType)}</p>
+          <h3 className="text-base font-semibold text-content-primary">{habit.name}</h3>
+          <p className="mt-1 text-xs text-content-muted">{humanize(habit.category)} · {humanize(habit.frequencyType)}</p>
         </div>
         <span
           className={[
             'rounded-full px-2 py-0.5 text-xs font-medium',
             habit.isArchived
-              ? 'bg-slate-100 text-slate-600'
+              ? 'bg-surface-tertiary text-content-secondary'
               : 'bg-emerald-100 text-emerald-700',
           ].join(' ')}
         >
@@ -48,11 +48,11 @@ export const HabitCard = ({
       </div>
 
       {habit.description ? (
-        <p className="mt-3 text-sm text-slate-600">{habit.description}</p>
+        <p className="mt-3 text-sm text-content-secondary">{habit.description}</p>
       ) : null}
 
       <div className="mt-3 space-y-1 text-sm">
-        <p className={currentStreak > 0 ? 'font-medium text-slate-700' : 'text-slate-500'}>
+        <p className={currentStreak > 0 ? 'font-medium text-content-secondary' : 'text-content-muted'}>
           {currentStreak > 0
             ? `🔥 ${currentStreak} day${currentStreak === 1 ? '' : 's'}`
             : 'No active streak'}
@@ -66,7 +66,7 @@ export const HabitCard = ({
           ) : null}
         </div>
         {longestStreak > 0 ? (
-          <p className="text-xs text-slate-500">Best: {longestStreak} days</p>
+          <p className="text-xs text-content-muted">Best: {longestStreak} days</p>
         ) : null}
       </div>
 
@@ -74,14 +74,14 @@ export const HabitCard = ({
         <button
           type="button"
           onClick={() => onEdit(habit)}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-content-secondary hover:bg-surface-tertiary"
         >
           Edit
         </button>
         <button
           type="button"
           onClick={() => onArchiveToggle(habit.id, !habit.isArchived)}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-content-secondary hover:bg-surface-tertiary"
         >
           {habit.isArchived ? 'Unarchive' : 'Archive'}
         </button>

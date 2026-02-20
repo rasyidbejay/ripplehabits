@@ -73,40 +73,40 @@ export const SettingsPage = () => {
   return (
     <section className="space-y-6">
       <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Settings</p>
-        <h2 className="mt-2 text-2xl font-semibold text-slate-900">Local profile</h2>
-        <p className="mt-1 text-sm text-slate-500">Manage your local user profile and back up app data.</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-content-muted">Settings</p>
+        <h2 className="mt-2 text-2xl font-semibold text-content-primary">Local profile</h2>
+        <p className="mt-1 text-sm text-content-muted">Manage your local user profile and back up app data.</p>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5">
+      <form onSubmit={handleSave} className="space-y-4 rounded-2xl border border-border bg-surface-secondary p-5">
         <div>
-          <label className="text-sm font-medium text-slate-700" htmlFor="settings-name">
+          <label className="text-sm font-medium text-content-secondary" htmlFor="settings-name">
             Name
           </label>
           <input
             id="settings-name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+            className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
             required
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-slate-700" htmlFor="settings-timezone">
+          <label className="text-sm font-medium text-content-secondary" htmlFor="settings-timezone">
             Timezone
           </label>
           <input
             id="settings-timezone"
             value={timezone}
             onChange={(event) => setTimezone(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+            className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
             required
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-slate-700" htmlFor="settings-anthropic-api-key">
+          <label className="text-sm font-medium text-content-secondary" htmlFor="settings-anthropic-api-key">
             Anthropic API key
           </label>
           <input
@@ -114,7 +114,7 @@ export const SettingsPage = () => {
             type="password"
             value={anthropicApiKey}
             onChange={(event) => setAnthropicApiKeyValue(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+            className="mt-1 w-full rounded-xl border border-border px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
             autoComplete="off"
             spellCheck={false}
           />
@@ -125,35 +125,35 @@ export const SettingsPage = () => {
 
         <button
           type="submit"
-          className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500"
+          className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90"
         >
           Save changes
         </button>
       </form>
 
-      <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5">
-        <h3 className="text-sm font-semibold text-slate-900">Data management</h3>
-        <p className="text-sm text-slate-500">Export all local app data, or import a validated backup JSON file.</p>
+      <div className="space-y-3 rounded-2xl border border-border bg-surface-secondary p-5">
+        <h3 className="text-sm font-semibold text-content-primary">Data management</h3>
+        <p className="text-sm text-content-muted">Export all local app data, or import a validated backup JSON file.</p>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <button
             type="button"
             onClick={handleExportData}
-            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-content-secondary transition hover:bg-surface-tertiary"
           >
             Export Data
           </button>
 
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-medium text-content-secondary transition hover:bg-surface-tertiary">
             Import Data
             <input type="file" accept="application/json" onChange={handleImportData} className="hidden" />
           </label>
         </div>
       </div>
 
-      {statusMessage ? <p className="text-sm text-slate-600">{statusMessage}</p> : null}
+      {statusMessage ? <p className="text-sm text-content-secondary">{statusMessage}</p> : null}
       {preferences?.updatedAt ? (
-        <p className="text-xs text-slate-400">Last updated: {new Date(preferences.updatedAt).toLocaleString()}</p>
+        <p className="text-xs text-content-muted">Last updated: {new Date(preferences.updatedAt).toLocaleString()}</p>
       ) : null}
     </section>
   )

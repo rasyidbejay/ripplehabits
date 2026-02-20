@@ -15,14 +15,14 @@ export const Layout = () => {
   const defaultTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur-sm">
+    <div className="min-h-screen bg-surface-tertiary text-content-primary">
+      <header className="border-b border-border bg-surface-secondary/90 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Ripple</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-content-muted">Ripple</p>
             <h1 className="text-lg font-semibold">Habit Tracker</h1>
           </div>
-          <nav className="flex gap-2 rounded-full bg-slate-100 p-1">
+          <nav className="flex gap-2 rounded-full bg-surface-tertiary p-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -32,8 +32,8 @@ export const Layout = () => {
                   [
                     'rounded-full px-4 py-2 text-sm font-medium transition',
                     isActive
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900',
+                      ? 'bg-accent text-white shadow-sm'
+                      : 'text-content-secondary hover:text-content-primary',
                   ].join(' ')
                 }
               >

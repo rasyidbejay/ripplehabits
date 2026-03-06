@@ -16,10 +16,10 @@ export const MobileDock = ({ className = '' }: MobileDockProps) => {
               end={to === '/'}
               className={({ isActive }) =>
                 [
-                  'flex min-h-11 flex-col items-center justify-center rounded-2xl px-2 py-1 text-[10px] font-medium tracking-wide transition-all duration-200',
+                  'flex min-h-12 flex-col items-center justify-center rounded-2xl border px-1.5 py-1 text-[10px] font-semibold tracking-wide transition-all duration-200',
                   isActive
-                    ? 'scale-105 text-accent'
-                    : 'text-content-muted hover:text-content-primary',
+                    ? 'border-accent/25 bg-accent-light/70 text-accent shadow-[0_8px_18px_rgba(79,70,229,0.16)]'
+                    : 'border-transparent text-content-muted',
                 ].join(' ')
               }
             >
@@ -28,12 +28,10 @@ export const MobileDock = ({ className = '' }: MobileDockProps) => {
                   <Icon
                     className={[
                       'transition-all duration-200',
-                      isActive
-                        ? 'active-icon fill-accent/20 text-accent'
-                        : 'text-content-muted',
+                      isActive ? 'active-icon text-accent' : 'text-content-muted',
                     ].join(' ')}
-                    width={22}
-                    height={22}
+                    width={20}
+                    height={20}
                   />
                   <span className="mt-1 leading-none">{label}</span>
                 </>

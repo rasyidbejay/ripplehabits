@@ -10,6 +10,7 @@ export default {
           primary: 'var(--color-bg-primary)',
           secondary: 'var(--color-bg-secondary)',
           tertiary: 'var(--color-bg-tertiary)',
+          elevated: 'var(--color-bg-elevated)',
           glass: 'var(--color-surface-glass)',
         },
         content: {
@@ -23,6 +24,7 @@ export default {
         },
         border: {
           DEFAULT: 'var(--color-border)',
+          strong: 'var(--color-border-strong)',
         },
       },
     },

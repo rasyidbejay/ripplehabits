@@ -4,10 +4,12 @@ import { ThemeSwitcher } from './ThemeSwitcher'
 
 export const DesktopNav = () => {
   return (
-    <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
-      <div className="flex items-center gap-4">
-        <p className="text-xl font-semibold tracking-tight text-accent">Ripple</p>
-        <nav className="hidden items-center gap-2 lg:flex">
+    <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-8 py-4">
+      <div className="flex min-w-0 items-center gap-5">
+        <div className="rounded-2xl border border-accent/35 bg-accent-light/60 px-3 py-1.5">
+          <p className="text-base font-semibold tracking-tight text-accent">Ripple</p>
+        </div>
+        <nav className="flex items-center gap-1.5">
           {desktopNavItems.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
@@ -15,10 +17,10 @@ export const DesktopNav = () => {
               end={to === '/'}
               className={({ isActive }) =>
                 [
-                  'flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-medium transition-all duration-200',
+                  'group flex min-h-11 items-center gap-2 rounded-xl px-3.5 text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-accent/15 text-accent'
-                    : 'text-content-secondary hover:bg-surface-tertiary hover:text-content-primary',
+                    ? 'border border-accent/25 bg-accent-light/70 text-accent shadow-[0_8px_20px_rgba(79,70,229,0.12)]'
+                    : 'border border-transparent text-content-secondary hover:border-border hover:bg-surface-elevated hover:text-content-primary',
                 ].join(' ')
               }
             >
@@ -27,12 +29,10 @@ export const DesktopNav = () => {
                   <Icon
                     className={[
                       'transition-all duration-200',
-                      isActive
-                        ? 'active-icon fill-accent/20 text-accent'
-                        : 'text-content-muted',
+                      isActive ? 'active-icon text-accent' : 'text-content-muted group-hover:text-content-primary',
                     ].join(' ')}
-                    width={18}
-                    height={18}
+                    width={17}
+                    height={17}
                   />
                   {label}
                 </>

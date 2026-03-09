@@ -9,6 +9,13 @@ type CreateHabitInput = {
   category: HabitCategory
   frequencyType: HabitFrequencyType
   targetDays: Habit['targetDays']
+  targetValue?: number
+  unit?: string
+  reminderTime?: string
+  notes?: string
+  emoji?: string
+  icon?: string
+  isArchived?: boolean
 }
 
 type UpdateHabitInput = Partial<
@@ -27,6 +34,8 @@ type UpdateHabitInput = Partial<
     | 'reminderTime'
     | 'notes'
     | 'sortOrder'
+    | 'emoji'
+    | 'icon'
   >
 >
 
@@ -39,7 +48,7 @@ export const useHabits = () => {
     return existing && existing.length > 0 ? existing : ensureHabitStarterData()
   })
 
-  const createHabit = ({ name, description, category, frequencyType, targetDays }: CreateHabitInput) => {
+  const createHabit = ({ name, description, category, frequencyType, targetDays, targetValue, unit, reminderTime, notes, emoji, icon, isArchived }: CreateHabitInput) => {
     const trimmedName = name.trim()
     const trimmedDescription = description.trim()
 
@@ -55,14 +64,19 @@ export const useHabits = () => {
       description: trimmedDescription,
       category,
       color: DEFAULT_COLOR,
-      icon: DEFAULT_ICON,
+      icon: icon?.trim() || DEFAULT_ICON,
+      emoji: emoji?.trim() || undefined,
       frequencyType,
       targetDays: frequencyType === 'specific_days' ? targetDays : [],
+      targetValue,
+      unit: unit?.trim() || undefined,
+      reminderTime: reminderTime?.trim() || undefined,
+      notes: notes?.trim() || undefined,
       createdDate: now,
       updatedDate: now,
-      isArchived: false,
-      archived: false,
-      active: true,
+      isArchived: Boolean(isArchived),
+      archived: Boolean(isArchived),
+      active: !isArchived,
       streak: { current: 0, longest: 0 },
       completionHistory: [],
       sortOrder: habits.length,
@@ -87,6 +101,8 @@ export const useHabits = () => {
             ? updates.description.trim()
             : habit.description,
         targetDays: updates.targetDays !== undefined ? updates.targetDays : habit.targetDays,
+        archived: updates.isArchived ?? updates.archived ?? habit.archived,
+        active: updates.isArchived !== undefined ? !updates.isArchived : updates.active ?? habit.active,
         updatedDate: new Date().toISOString(),
       }),
     )

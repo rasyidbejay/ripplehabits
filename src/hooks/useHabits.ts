@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { Habit, HabitCategory, HabitFrequencyType } from '../types/models'
-import { storage } from '../utils/storage'
+import { ensureHabitStarterData, storage } from '../utils/storage'
+import { getActiveHabits, getArchivedHabits } from '../utils/habits'
 
 type CreateHabitInput = {
   name: string
@@ -11,14 +12,32 @@ type CreateHabitInput = {
 }
 
 type UpdateHabitInput = Partial<
-  Pick<Habit, 'name' | 'description' | 'category' | 'frequencyType' | 'targetDays' | 'isArchived'>
+  Pick<
+    Habit,
+    | 'name'
+    | 'description'
+    | 'category'
+    | 'frequencyType'
+    | 'targetDays'
+    | 'isArchived'
+    | 'archived'
+    | 'active'
+    | 'targetValue'
+    | 'unit'
+    | 'reminderTime'
+    | 'notes'
+    | 'sortOrder'
+  >
 >
 
 const DEFAULT_COLOR = '#6366f1'
 const DEFAULT_ICON = 'sparkles'
 
 export const useHabits = () => {
-  const [habits, setHabits] = useState<Habit[]>(() => storage.get('habits') ?? [])
+  const [habits, setHabits] = useState<Habit[]>(() => {
+    const existing = storage.get('habits')
+    return existing && existing.length > 0 ? existing : ensureHabitStarterData()
+  })
 
   const createHabit = ({ name, description, category, frequencyType, targetDays }: CreateHabitInput) => {
     const trimmedName = name.trim()
@@ -28,6 +47,8 @@ export const useHabits = () => {
       return null
     }
 
+    const now = new Date().toISOString()
+
     const habit: Habit = {
       id: crypto.randomUUID(),
       name: trimmedName,
@@ -36,9 +57,15 @@ export const useHabits = () => {
       color: DEFAULT_COLOR,
       icon: DEFAULT_ICON,
       frequencyType,
-      targetDays: frequencyType === 'weekly' ? targetDays : [],
-      createdDate: new Date().toISOString(),
+      targetDays: frequencyType === 'specific_days' ? targetDays : [],
+      createdDate: now,
+      updatedDate: now,
       isArchived: false,
+      archived: false,
+      active: true,
+      streak: { current: 0, longest: 0 },
+      completionHistory: [],
+      sortOrder: habits.length,
     }
 
     const nextHabits = storage.create('habits', habit)
@@ -59,10 +86,8 @@ export const useHabits = () => {
           updates.description !== undefined
             ? updates.description.trim()
             : habit.description,
-        targetDays:
-          updates.targetDays !== undefined
-            ? updates.targetDays
-            : habit.targetDays,
+        targetDays: updates.targetDays !== undefined ? updates.targetDays : habit.targetDays,
+        updatedDate: new Date().toISOString(),
       }),
     )
 
@@ -70,11 +95,11 @@ export const useHabits = () => {
   }
 
   const archiveHabit = (habitId: Habit['id']) => {
-    updateHabit(habitId, { isArchived: true })
+    updateHabit(habitId, { isArchived: true, archived: true, active: false })
   }
 
   const unarchiveHabit = (habitId: Habit['id']) => {
-    updateHabit(habitId, { isArchived: false })
+    updateHabit(habitId, { isArchived: false, archived: false, active: true })
   }
 
   const deleteHabit = (habitId: Habit['id']) => {
@@ -83,8 +108,8 @@ export const useHabits = () => {
   }
 
   const derived = useMemo(() => {
-    const activeHabits = habits.filter((habit) => !habit.isArchived)
-    const archivedHabits = habits.filter((habit) => habit.isArchived)
+    const activeHabits = getActiveHabits(habits)
+    const archivedHabits = getArchivedHabits(habits)
     const categories = Array.from(new Set(habits.map((habit) => habit.category)))
 
     return {

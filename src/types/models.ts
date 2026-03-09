@@ -10,7 +10,7 @@ export type HabitCategory =
   | 'finance'
   | 'custom'
 
-export type HabitFrequencyType = 'daily' | 'weekly' | 'monthly' | 'custom'
+export type HabitFrequencyType = 'daily' | 'weekly' | 'specific_days' | 'custom_target'
 
 export type Weekday =
   | 'monday'
@@ -20,6 +20,8 @@ export type Weekday =
   | 'friday'
   | 'saturday'
   | 'sunday'
+
+export type CompletionStatus = 'completed' | 'partial' | 'skipped' | 'missed'
 
 export interface UserPreferences {
   name: string
@@ -32,6 +34,12 @@ export interface UserPreferences {
   updatedAt: string
 }
 
+export interface HabitStreakMeta {
+  current: number
+  longest: number
+  lastCompletedDate?: string
+}
+
 export interface Habit {
   id: string
   name: string
@@ -39,16 +47,30 @@ export interface Habit {
   category: HabitCategory
   color: string
   icon: string
+  emoji?: string
   frequencyType: HabitFrequencyType
   targetDays: Weekday[]
+  targetValue?: number
+  unit?: string
+  reminderTime?: string
+  notes?: string
   createdDate: string
+  updatedDate: string
   isArchived: boolean
+  archived: boolean
+  active: boolean
+  streak: HabitStreakMeta
+  completionHistory: string[]
+  lastCompletedDate?: string
+  sortOrder: number
 }
 
 export interface CheckIn {
   habitId: Habit['id']
   date: string
   completed: boolean
+  value?: number
+  status: CompletionStatus
   notes?: string
 }
 

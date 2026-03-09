@@ -1,46 +1,12 @@
 import { useMemo, useState } from 'react'
-import {
-  formatISO,
-  getDate,
-  isSameDay,
-  parseISO,
-} from 'date-fns'
-import type { CheckIn, Habit, Weekday } from '../types/models'
+import { formatISO, isSameDay, parseISO } from 'date-fns'
+import type { CheckIn, Habit } from '../types/models'
+import { buildCompletionHistory, getDueHabitsForDate, getLastCompletedDate } from '../utils/habits'
 import { storage } from '../utils/storage'
-
-const WEEKDAY_BY_INDEX: Weekday[] = [
-  'sunday',
-  'monday',
-  'tuesday',
-  'wednesday',
-  'thursday',
-  'friday',
-  'saturday',
-]
-
-const isHabitScheduledForToday = (habit: Habit, today: Date) => {
-  if (habit.isArchived) {
-    return false
-  }
-
-  if (habit.frequencyType === 'daily') {
-    return true
-  }
-
-  if (habit.frequencyType === 'monthly') {
-    return getDate(parseISO(habit.createdDate)) === getDate(today)
-  }
-
-  if (habit.targetDays.length === 0) {
-    return true
-  }
-
-  const todayWeekday = WEEKDAY_BY_INDEX[today.getDay()]
-  return habit.targetDays.includes(todayWeekday)
-}
+import { calculateCurrentStreak, calculateLongestStreak } from '../utils/streaks'
 
 export const useTodayHabits = () => {
-  const [habits] = useState<Habit[]>(() => storage.get('habits') ?? [])
+  const [habits, setHabits] = useState<Habit[]>(() => storage.get('habits') ?? [])
   const [checkIns, setCheckIns] = useState<CheckIn[]>(() => storage.get('checkIns') ?? [])
 
   const today = useMemo(() => new Date(), [])
@@ -49,10 +15,7 @@ export const useTodayHabits = () => {
     [today],
   )
 
-  const todayHabits = useMemo(
-    () => habits.filter((habit) => isHabitScheduledForToday(habit, today)),
-    [habits, today],
-  )
+  const todayHabits = useMemo(() => getDueHabitsForDate(habits, today), [habits, today])
 
   const getCheckInForHabit = (habitId: Habit['id']) =>
     checkIns.find(
@@ -61,9 +24,36 @@ export const useTodayHabits = () => {
         isSameDay(parseISO(checkIn.date), today),
     )
 
+  const syncHabitMetadata = (nextCheckIns: CheckIn[]) => {
+    const nextHabits = storage.update(
+      'habits',
+      () => true,
+      (habit) => {
+        const current = calculateCurrentStreak(habit.id, nextCheckIns)
+        const longest = calculateLongestStreak(habit.id, nextCheckIns)
+        const completionHistory = buildCompletionHistory(habit.id, nextCheckIns)
+        const lastCompletedDate = getLastCompletedDate(habit.id, nextCheckIns)
+
+        return {
+          ...habit,
+          completionHistory,
+          lastCompletedDate,
+          streak: {
+            current,
+            longest,
+            lastCompletedDate,
+          },
+          updatedDate: new Date().toISOString(),
+        }
+      },
+    )
+
+    setHabits(nextHabits)
+  }
+
   const saveCheckIn = (
     habitId: Habit['id'],
-    updates: Pick<CheckIn, 'completed' | 'notes'>,
+    updates: Pick<CheckIn, 'completed' | 'notes' | 'value'>,
   ) => {
     const existingEntry = getCheckInForHabit(habitId)
 
@@ -76,11 +66,14 @@ export const useTodayHabits = () => {
         (checkIn) => ({
           ...checkIn,
           completed: updates.completed,
+          value: updates.value,
+          status: updates.completed ? 'completed' : 'missed',
           notes: updates.notes,
         }),
       )
 
       setCheckIns(nextCheckIns)
+      syncHabitMetadata(nextCheckIns)
       return
     }
 
@@ -88,10 +81,13 @@ export const useTodayHabits = () => {
       habitId,
       date: todayKey,
       completed: updates.completed,
+      value: updates.value,
+      status: updates.completed ? 'completed' : 'missed',
       notes: updates.notes,
     })
 
     setCheckIns(nextCheckIns)
+    syncHabitMetadata(nextCheckIns)
   }
 
   const toggleCheckIn = (habitId: Habit['id']) => {
@@ -101,6 +97,7 @@ export const useTodayHabits = () => {
       saveCheckIn(habitId, {
         completed: !existingEntry.completed,
         notes: existingEntry.notes,
+        value: existingEntry.value,
       })
       return
     }
@@ -108,6 +105,7 @@ export const useTodayHabits = () => {
     saveCheckIn(habitId, {
       completed: true,
       notes: '',
+      value: 1,
     })
   }
 
@@ -117,6 +115,7 @@ export const useTodayHabits = () => {
     saveCheckIn(habitId, {
       completed: existingEntry?.completed ?? false,
       notes: notes.trim(),
+      value: existingEntry?.value,
     })
   }
 

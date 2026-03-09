@@ -30,8 +30,8 @@ const CATEGORY_OPTIONS: HabitCategory[] = [
 const FREQUENCY_OPTIONS: HabitFrequencyType[] = [
   'daily',
   'weekly',
-  'monthly',
-  'custom',
+  'specific_days',
+  'custom_target',
 ]
 
 const WEEKDAY_OPTIONS: { label: string; value: Weekday }[] = [
@@ -100,7 +100,7 @@ export const HabitForm = ({
       ...values,
       name: values.name.trim(),
       description: values.description.trim(),
-      targetDays: values.frequencyType === 'weekly' ? values.targetDays : [],
+      targetDays: values.frequencyType === 'specific_days' ? values.targetDays : [],
     })
 
     if (!initialValues) {
@@ -182,7 +182,7 @@ export const HabitForm = ({
           </select>
         </label>
 
-        {values.frequencyType === 'weekly' ? (
+        {values.frequencyType === 'specific_days' ? (
           <div className="space-y-2 sm:col-span-2">
             <p className="text-xs font-medium text-content-secondary">Target days</p>
             <div className="flex flex-wrap gap-2">

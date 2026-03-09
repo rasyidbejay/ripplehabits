@@ -6,7 +6,6 @@ import {
   endOfMonth,
   endOfWeek,
   format,
-  getDate,
   isSameDay,
   isSameMonth,
   isToday,
@@ -17,6 +16,7 @@ import {
   subMonths,
 } from 'date-fns'
 import type { CheckIn, Habit, UserPreferences, Weekday } from '../types/models'
+import { isHabitDueOnDate } from '../utils/habits'
 import { storage } from '../utils/storage'
 
 interface ScheduledHabitStatus {
@@ -24,15 +24,6 @@ interface ScheduledHabitStatus {
   checkIn: CheckIn | undefined
 }
 
-const WEEKDAY_BY_INDEX: Weekday[] = [
-  'sunday',
-  'monday',
-  'tuesday',
-  'wednesday',
-  'thursday',
-  'friday',
-  'saturday',
-]
 
 const WEEK_STARTS_ON_BY_DAY: Record<Weekday, 0 | 1 | 2 | 3 | 4 | 5 | 6> = {
   sunday: 0,
@@ -42,27 +33,6 @@ const WEEK_STARTS_ON_BY_DAY: Record<Weekday, 0 | 1 | 2 | 3 | 4 | 5 | 6> = {
   thursday: 4,
   friday: 5,
   saturday: 6,
-}
-
-const isHabitScheduledForDate = (habit: Habit, targetDate: Date) => {
-  if (habit.isArchived) {
-    return false
-  }
-
-  if (habit.frequencyType === 'daily') {
-    return true
-  }
-
-  if (habit.frequencyType === 'monthly') {
-    return getDate(parseISO(habit.createdDate)) === getDate(targetDate)
-  }
-
-  if (habit.targetDays.length === 0) {
-    return true
-  }
-
-  const weekday = WEEKDAY_BY_INDEX[targetDate.getDay()]
-  return habit.targetDays.includes(weekday)
 }
 
 export const CalendarPage = () => {
@@ -127,7 +97,7 @@ export const CalendarPage = () => {
       return []
     }
 
-    const scheduledHabits = habits.filter((habit) => isHabitScheduledForDate(habit, selectedDate))
+    const scheduledHabits = habits.filter((habit) => isHabitDueOnDate(habit, selectedDate))
 
     return scheduledHabits.map((habit) => ({
       habit,

@@ -1,11 +1,18 @@
 import type {
   Achievement,
   CheckIn,
+  CompletionStatus,
   Habit,
   Routine,
   UserPreferences,
 } from '../types/models'
 import type { UserProfile } from '../types/user'
+import {
+  buildCompletionHistory,
+  getCurrentHabitStreak,
+  getLastCompletedDate,
+  getLongestHabitStreak,
+} from './habits'
 
 const ROOT_STORAGE_KEY = 'ripple:v1'
 const STORAGE_VERSION = 1 as const
@@ -37,6 +44,8 @@ export interface AppDataExport {
 
 const detectTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 
+const nowIso = () => new Date().toISOString()
+
 const createDefaultRoot = (): RootStorage => ({
   version: STORAGE_VERSION,
   userProfile: null,
@@ -64,6 +73,107 @@ const isUserProfile = (value: unknown): value is UserProfile => {
   )
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const normalizeStatus = (value: unknown): CompletionStatus => {
+  if (value === 'completed' || value === 'partial' || value === 'skipped' || value === 'missed') {
+    return value
+  }
+
+  return 'completed'
+}
+
+const normalizeCheckIn = (value: unknown): CheckIn | null => {
+  if (!isRecord(value) || typeof value.habitId !== 'string' || typeof value.date !== 'string') {
+    return null
+  }
+
+  const completed = typeof value.completed === 'boolean'
+    ? value.completed
+    : value.status === 'completed'
+
+  return {
+    habitId: value.habitId,
+    date: value.date,
+    completed,
+    value: typeof value.value === 'number' ? value.value : undefined,
+    status: normalizeStatus(value.status),
+    notes: typeof value.notes === 'string' ? value.notes : undefined,
+  }
+}
+
+const normalizeHabit = (value: unknown, index: number, checkIns: CheckIn[]): Habit | null => {
+  if (!isRecord(value) || typeof value.id !== 'string' || typeof value.name !== 'string') {
+    return null
+  }
+
+  const createdDate = typeof value.createdDate === 'string' ? value.createdDate : nowIso()
+  const updatedDate = typeof value.updatedDate === 'string' ? value.updatedDate : createdDate
+  const isArchived = Boolean(value.isArchived)
+  const archived = typeof value.archived === 'boolean' ? value.archived : isArchived
+  const active = typeof value.active === 'boolean' ? value.active : !archived
+  const completionHistory = buildCompletionHistory(value.id, checkIns)
+  const lastCompletedDate = getLastCompletedDate(value.id, checkIns)
+
+  return {
+    id: value.id,
+    name: value.name.trim(),
+    description: typeof value.description === 'string' ? value.description : '',
+    category: typeof value.category === 'string' ? (value.category as Habit['category']) : 'custom',
+    color: typeof value.color === 'string' ? value.color : '#6366f1',
+    icon: typeof value.icon === 'string' ? value.icon : 'sparkles',
+    emoji: typeof value.emoji === 'string' ? value.emoji : undefined,
+    frequencyType:
+      value.frequencyType === 'daily' ||
+      value.frequencyType === 'weekly' ||
+      value.frequencyType === 'specific_days' ||
+      value.frequencyType === 'custom_target'
+        ? value.frequencyType
+        : value.frequencyType === 'monthly'
+          ? 'weekly'
+          : 'daily',
+    targetDays: Array.isArray(value.targetDays) ? (value.targetDays as Habit['targetDays']) : [],
+    targetValue: typeof value.targetValue === 'number' ? value.targetValue : undefined,
+    unit: typeof value.unit === 'string' ? value.unit : undefined,
+    reminderTime: typeof value.reminderTime === 'string' ? value.reminderTime : undefined,
+    notes: typeof value.notes === 'string' ? value.notes : undefined,
+    createdDate,
+    updatedDate,
+    isArchived: archived,
+    archived,
+    active,
+    streak: {
+      current: getCurrentHabitStreak(value.id, checkIns),
+      longest: getLongestHabitStreak(value.id, checkIns),
+      lastCompletedDate,
+    },
+    completionHistory,
+    lastCompletedDate,
+    sortOrder: typeof value.sortOrder === 'number' ? value.sortOrder : index,
+  }
+}
+
+const normalizeStorageData = (data: unknown): Partial<StorageSchema> => {
+  if (!isRecord(data)) {
+    return {}
+  }
+
+  const rawCheckIns = Array.isArray(data.checkIns) ? data.checkIns : []
+  const checkIns = rawCheckIns.map(normalizeCheckIn).filter((item): item is CheckIn => Boolean(item))
+
+  const rawHabits = Array.isArray(data.habits) ? data.habits : []
+  const habits = rawHabits
+    .map((item, index) => normalizeHabit(item, index, checkIns))
+    .filter((item): item is Habit => Boolean(item))
+
+  return {
+    ...data,
+    habits,
+    checkIns,
+  } as Partial<StorageSchema>
+}
+
 const readRoot = (): RootStorage => {
   const raw = localStorage.getItem(ROOT_STORAGE_KEY)
 
@@ -81,7 +191,7 @@ const readRoot = (): RootStorage => {
     return {
       version: STORAGE_VERSION,
       userProfile: isUserProfile(parsed.userProfile) ? parsed.userProfile : null,
-      data: typeof parsed.data === 'object' && parsed.data ? parsed.data : {},
+      data: normalizeStorageData(parsed.data),
     }
   } catch {
     return createDefaultRoot()
@@ -102,6 +212,47 @@ const createProfile = (input: { name: string; timezone?: string }): UserProfile 
     createdAt: now,
     updatedAt: now,
   }
+}
+
+const createStarterHabit = (): Habit => {
+  const now = nowIso()
+
+  return {
+    id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}`,
+    name: 'Drink water',
+    description: 'Kickstart your day with one glass of water.',
+    category: 'health',
+    color: '#0ea5e9',
+    icon: 'droplets',
+    emoji: '💧',
+    frequencyType: 'daily',
+    targetDays: [],
+    targetValue: 1,
+    unit: 'glass',
+    reminderTime: '08:00',
+    notes: '',
+    createdDate: now,
+    updatedDate: now,
+    isArchived: false,
+    archived: false,
+    active: true,
+    streak: { current: 0, longest: 0 },
+    completionHistory: [],
+    lastCompletedDate: undefined,
+    sortOrder: 0,
+  }
+}
+
+export const ensureHabitStarterData = (): Habit[] => {
+  const existing = storage.list('habits')
+
+  if (existing.length > 0) {
+    return existing
+  }
+
+  const starter = [createStarterHabit()]
+  storage.set('habits', starter)
+  return starter
 }
 
 export const getUserProfile = (): UserProfile | null => readRoot().userProfile
@@ -138,9 +289,6 @@ export const exportAppData = (): string => {
   return JSON.stringify(payload, null, 2)
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null
-
 export const importAppData = (
   jsonValue: string,
 ): { ok: boolean; message: string; userProfile?: UserProfile } => {
@@ -167,7 +315,7 @@ export const importAppData = (
     const nextRoot: RootStorage = {
       version: STORAGE_VERSION,
       userProfile: importedProfile,
-      data: isRecord(candidate.data) ? (candidate.data as Partial<StorageSchema>) : {},
+      data: normalizeStorageData(candidate.data),
     }
 
     writeRoot(nextRoot)

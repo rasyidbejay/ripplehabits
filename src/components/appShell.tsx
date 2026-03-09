@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { BarChart3Icon, CircleCheckBigIcon, RepeatIcon, SettingsIcon } from './icons'
 
@@ -62,10 +62,21 @@ export const MobileBottomTabs = () => (
   </nav>
 )
 
-export const FloatingAddButton = () => (
-  <button className="fixed bottom-20 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-3xl leading-none text-white shadow-soft lg:hidden" aria-label="Add habit">+
-  </button>
-)
+export const FloatingAddButton = ({ visible }: { visible: boolean }) => {
+  if (!visible) {
+    return null
+  }
+
+  return (
+    <Link
+      to="/habits"
+      className="fixed bottom-20 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-3xl leading-none text-white shadow-soft lg:hidden"
+      aria-label="Add habit"
+    >
+      +
+    </Link>
+  )
+}
 
 export const AppLayout = () => {
   const location = useLocation()
@@ -84,7 +95,7 @@ export const AppLayout = () => {
           </main>
         </div>
       </div>
-      <FloatingAddButton />
+      <FloatingAddButton visible={location.pathname === '/journal'} />
       <MobileBottomTabs />
     </div>
   )

@@ -4,60 +4,50 @@
 
 :root {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --color-bg-primary: #f3f5fb;
+  --color-bg-primary: #f4f6fb;
   --color-bg-secondary: #ffffff;
-  --color-bg-tertiary: #eef2ff;
+  --color-bg-tertiary: #edf2fb;
   --color-bg-elevated: #f8faff;
-  --color-text-primary: #101827;
-  --color-text-secondary: #475467;
-  --color-text-muted: #667085;
-  --color-border: #d7deea;
-  --color-border-strong: #c5cfdf;
+  --color-text-primary: #121927;
+  --color-text-secondary: #4b5568;
+  --color-text-muted: #6b7489;
+  --color-border: #dbe2ef;
+  --color-border-strong: #c9d2e3;
   --color-accent: #4f46e5;
-  --color-accent-light: #e3e7ff;
-  --color-surface-glass: rgba(255, 255, 255, 0.8);
-  --color-surface-glass-border: rgba(255, 255, 255, 0.58);
-  --color-surface-glass-shadow: rgba(27, 33, 55, 0.1);
+  --color-accent-light: #e7e9ff;
+  --color-surface-glass: rgba(255, 255, 255, 0.82);
+  --color-surface-glass-border: rgba(255, 255, 255, 0.62);
+  --color-surface-glass-shadow: rgba(24, 33, 56, 0.12);
 }
 
 .dark {
-  --color-bg-primary: #090d19;
-  --color-bg-secondary: #131a29;
-  --color-bg-tertiary: #1b2438;
-  --color-bg-elevated: #1c263d;
+  --color-bg-primary: #0a1222;
+  --color-bg-secondary: #121d31;
+  --color-bg-tertiary: #1a2742;
+  --color-bg-elevated: #16243b;
   --color-text-primary: #edf2ff;
-  --color-text-secondary: #b5bfd6;
-  --color-text-muted: #909bb5;
-  --color-border: #293553;
-  --color-border-strong: #354264;
-  --color-accent: #8b8dff;
-  --color-accent-light: #252f57;
-  --color-surface-glass: rgba(10, 16, 33, 0.75);
-  --color-surface-glass-border: rgba(152, 171, 216, 0.22);
-  --color-surface-glass-shadow: rgba(2, 6, 17, 0.5);
+  --color-text-secondary: #b6c0d7;
+  --color-text-muted: #8f9bb7;
+  --color-border: #273755;
+  --color-border-strong: #334667;
+  --color-accent: #8d8dff;
+  --color-accent-light: #26355a;
+  --color-surface-glass: rgba(12, 21, 37, 0.78);
+  --color-surface-glass-border: rgba(143, 166, 217, 0.2);
+  --color-surface-glass-shadow: rgba(0, 4, 13, 0.5);
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  min-height: 100%;
-}
-
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; }
 body {
   margin: 0;
   color: var(--color-text-primary);
   background:
-    radial-gradient(circle at 10% -10%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 45%),
-    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--color-accent) 8%, transparent), transparent 52%),
+    radial-gradient(circle at 0% -10%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 42%),
     linear-gradient(180deg, var(--color-bg-primary), color-mix(in srgb, var(--color-bg-primary) 86%, #101828 14%));
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  transition: background-color 0.25s ease, color 0.25s ease;
 }
+
+.shadow-soft { box-shadow: 0 10px 26px rgba(16, 24, 40, 0.08); }
 
 .liquid-glass-dock {
   position: fixed;
@@ -66,35 +56,14 @@ body {
   right: 12px;
   z-index: 50;
   background: var(--color-surface-glass);
-  backdrop-filter: blur(22px) saturate(180%);
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(170%);
   border: 1px solid var(--color-surface-glass-border);
-  border-radius: 24px;
-  box-shadow: 0 14px 34px var(--color-surface-glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  box-shadow: 0 14px 30px var(--color-surface-glass-shadow);
   padding: 7px;
   padding-bottom: max(7px, env(safe-area-inset-bottom));
 }
 
-@supports not (backdrop-filter: blur(20px)) {
-  .liquid-glass-dock {
-    background: var(--color-bg-secondary);
-    opacity: 0.97;
-  }
-}
-
-.active-icon {
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-accent) 45%, transparent));
-}
-
-.dark .active-icon {
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-accent) 40%, transparent));
-}
-
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

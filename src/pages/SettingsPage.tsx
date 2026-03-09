@@ -1,166 +1,73 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import { ThemeSwitcher } from '../components/ThemeSwitcher'
-import { useUserPreferences } from '../hooks/useUserPreferences'
-import { getAnthropicApiKey, setAnthropicApiKey } from '../utils/storage'
+import type { UserProfile } from '../types/user'
 
-const detectTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+export const SettingsSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <section className="rounded-2xl border border-border bg-surface-secondary p-4">
+    <h2 className="text-sm font-semibold">{title}</h2>
+    <div className="mt-3">{children}</div>
+  </section>
+)
 
-export const SettingsPage = () => {
-  const { preferences, updatePreferences, exportData, importData } = useUserPreferences()
+type Props = {
+  user: UserProfile
+  onSave: (updates: { name: string; timezone: string }) => void
+  onExport: () => string
+  onImport: (value: string) => { ok: boolean; message: string }
+}
 
-  const [name, setName] = useState(preferences?.name ?? '')
-  const [timezone, setTimezone] = useState(preferences?.timezone ?? detectTimezone())
-  const [anthropicApiKey, setAnthropicApiKeyValue] = useState(() => getAnthropicApiKey())
-  const [statusMessage, setStatusMessage] = useState('')
+export const SettingsPage = ({ user, onSave, onExport, onImport }: Props) => {
+  const [name, setName] = useState(user.name)
+  const [timezone, setTimezone] = useState(user.timezone)
+  const [notice, setNotice] = useState('')
+  const [error, setError] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    setName(preferences?.name ?? '')
-    setTimezone(preferences?.timezone ?? detectTimezone())
-  }, [preferences])
-
-  const exportFileName = useMemo(
-    () => `ripplehabits-backup-${new Date().toISOString().slice(0, 10)}.json`,
-    [],
-  )
-
-  const handleSave = (event: FormEvent<HTMLFormElement>) => {
+  const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-
-    updatePreferences({
-      name: name.trim(),
-      timezone: timezone.trim(),
-    })
-
-    setAnthropicApiKey(anthropicApiKey)
-
-    setStatusMessage('Settings saved.')
+    onSave({ name: name.trim(), timezone: timezone.trim() })
+    setNotice('Saved changes.')
   }
 
-  const handleExportData = () => {
-    try {
-      const data = exportData()
-      const blob = new Blob([data], { type: 'application/json' })
-      const link = document.createElement('a')
-      const url = URL.createObjectURL(blob)
-
-      link.href = url
-      link.download = exportFileName
-      link.click()
-      URL.revokeObjectURL(url)
-      setStatusMessage('Data exported successfully.')
-    } catch (error) {
-      setStatusMessage(
-        error instanceof Error ? error.message : 'Unable to export app data.',
-      )
-    }
-  }
-
-  const handleImportData = async (event: ChangeEvent<HTMLInputElement>) => {
+  const handleImport = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-
-    if (!file) {
-      return
-    }
-
-    const fileText = await file.text()
-    const result = importData(fileText)
-
-    setStatusMessage(result.message)
-
+    if (!file) return
+    const result = onImport(await file.text())
+    if (result.ok) setNotice(result.message)
+    else setError(result.message)
     event.target.value = ''
   }
 
   return (
-    <section className="space-y-6">
-      <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-content-muted">Settings</p>
-        <h2 className="mt-2 text-2xl font-semibold text-content-primary">Local profile</h2>
-        <p className="mt-1 text-sm text-content-muted">Manage your local user profile and back up app data.</p>
-      </div>
-
-      <div className="rounded-2xl border border-border bg-surface-secondary p-5">
-        <p className="mb-3 text-sm font-medium text-content-secondary">Theme</p>
-        <ThemeSwitcher className="w-full justify-center md:w-auto" />
-      </div>
-
-      <form onSubmit={handleSave} className="space-y-4 rounded-2xl border border-border bg-surface-secondary p-5">
-        <div>
-          <label className="text-sm font-medium text-content-secondary" htmlFor="settings-name">
-            Name
-          </label>
-          <input
-            id="settings-name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
-            required
-          />
+    <div className="space-y-4">
+      <h2 className="text-2xl font-semibold">Settings</h2>
+      <SettingsSection title="Appearance"><ThemeSwitcher /></SettingsSection>
+      <SettingsSection title="Profile">
+        <form onSubmit={submit} className="space-y-2">
+          <input value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-lg border border-border bg-surface-primary px-3 py-2 text-sm" placeholder="Name" />
+          <input value={timezone} onChange={(event) => setTimezone(event.target.value)} className="w-full rounded-lg border border-border bg-surface-primary px-3 py-2 text-sm" placeholder="Timezone" />
+          <button className="rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-white">Save profile</button>
+        </form>
+      </SettingsSection>
+      <SettingsSection title="Backup">
+        <div className="flex gap-2">
+          <button onClick={() => {
+            const content = onExport()
+            const blob = new Blob([content], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `ripple-backup-${new Date().toISOString().slice(0, 10)}.json`
+            a.click()
+            URL.revokeObjectURL(url)
+          }} className="rounded-lg border border-border bg-surface-primary px-3 py-2 text-sm">Export JSON</button>
+          <button onClick={() => fileInputRef.current?.click()} className="rounded-lg border border-border bg-surface-primary px-3 py-2 text-sm">Import JSON</button>
+          <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={handleImport} />
         </div>
-
-        <div>
-          <label className="text-sm font-medium text-content-secondary" htmlFor="settings-timezone">
-            Timezone
-          </label>
-          <input
-            id="settings-timezone"
-            value={timezone}
-            onChange={(event) => setTimezone(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium text-content-secondary" htmlFor="settings-anthropic-api-key">
-            Anthropic API key
-          </label>
-          <input
-            id="settings-anthropic-api-key"
-            type="password"
-            value={anthropicApiKey}
-            onChange={(event) => setAnthropicApiKeyValue(event.target.value)}
-            className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
-            autoComplete="off"
-            spellCheck={false}
-          />
-          <p className="mt-2 text-xs text-amber-700">
-            This key is stored in browser and visible in developer tools.
-          </p>
-        </div>
-
-        <button
-          type="submit"
-          className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-surface-secondary transition hover:bg-accent/90"
-        >
-          Save changes
-        </button>
-      </form>
-
-      <div className="space-y-3 rounded-2xl border border-border bg-surface-secondary p-5">
-        <h3 className="text-sm font-semibold text-content-primary">Data management</h3>
-        <p className="text-sm text-content-muted">Export all local app data, or import a validated backup JSON file.</p>
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            type="button"
-            onClick={handleExportData}
-            className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-content-secondary transition hover:bg-surface-tertiary"
-          >
-            Export Data
-          </button>
-
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-medium text-content-secondary transition hover:bg-surface-tertiary">
-            Import Data
-            <input type="file" accept="application/json" onChange={handleImportData} className="hidden" />
-          </label>
-        </div>
-      </div>
-
-      {statusMessage ? <p className="text-sm text-content-secondary">{statusMessage}</p> : null}
-      {preferences?.updatedAt ? (
-        <p className="text-xs text-content-muted">Last updated: {new Date(preferences.updatedAt).toLocaleString()}</p>
-      ) : null}
-    </section>
+      </SettingsSection>
+      {notice ? <p className="text-sm text-emerald-600">{notice}</p> : null}
+      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+    </div>
   )
 }

@@ -1,14 +1,12 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { AppLayout } from './components/AppLayout'
+import { AppLayout } from './components/appShell'
 import { OnboardingModal } from './components/OnboardingModal'
 import { useLocalUser } from './hooks/useLocalUser'
-import { Dashboard } from './pages/Dashboard'
-import { HabitsPage } from './pages/HabitsPage'
-import { CalendarPage } from './pages/CalendarPage'
-import { Home } from './pages/Home'
+import { JournalPage } from './pages/JournalPage'
+import { ManageHabitsPage } from './pages/ManageHabitsPage'
 import { NotFound } from './pages/NotFound'
-import { Settings } from './pages/Settings'
-import { TodayPage } from './pages/TodayPage'
+import { ProgressPage } from './pages/ProgressPage'
+import { SettingsPage } from './pages/SettingsPage'
 
 const detectTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 
@@ -19,21 +17,15 @@ const App = () => {
     <>
       <Routes>
         <Route element={<AppLayout />}>
-          <Route path="/" element={user ? <Home user={user} /> : <Navigate to="/settings" replace />} />
-          <Route path="/habits" element={<HabitsPage />} />
-          <Route path="/today" element={<TodayPage />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Navigate to="/journal" replace />} />
+          <Route path="/journal" element={<JournalPage />} />
+          <Route path="/progress" element={<ProgressPage />} />
+          <Route path="/habits" element={<ManageHabitsPage />} />
           <Route
             path="/settings"
             element={
               user ? (
-                <Settings
-                  user={user}
-                  onSave={updateUser}
-                  onExport={exportAll}
-                  onImport={importAll}
-                />
+                <SettingsPage user={user} onSave={updateUser} onExport={exportAll} onImport={importAll} />
               ) : (
                 <section className="space-y-2">
                   <h1 className="text-xl font-semibold">Complete onboarding to access settings.</h1>
@@ -41,15 +33,14 @@ const App = () => {
               )
             }
           />
+          <Route path="/today" element={<Navigate to="/journal" replace />} />
+          <Route path="/calendar" element={<Navigate to="/progress" replace />} />
+          <Route path="/dashboard" element={<Navigate to="/progress" replace />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
 
-      <OnboardingModal
-        open={isFirstRun}
-        defaultTimezone={detectTimezone()}
-        onSave={createUser}
-      />
+      <OnboardingModal open={isFirstRun} defaultTimezone={detectTimezone()} onSave={createUser} />
     </>
   )
 }

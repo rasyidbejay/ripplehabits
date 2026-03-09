@@ -109,6 +109,28 @@ export const useTodayHabits = () => {
     })
   }
 
+  const incrementCheckIn = (habitId: Habit['id'], amount = 1) => {
+    const existingEntry = getCheckInForHabit(habitId)
+    const nextValue = (existingEntry?.value ?? 0) + amount
+
+    saveCheckIn(habitId, {
+      completed: nextValue > 0,
+      notes: existingEntry?.notes ?? '',
+      value: nextValue,
+    })
+  }
+
+  const setCheckInValue = (habitId: Habit['id'], value: number) => {
+    const existingEntry = getCheckInForHabit(habitId)
+    const normalizedValue = Math.max(0, value)
+
+    saveCheckIn(habitId, {
+      completed: normalizedValue > 0,
+      notes: existingEntry?.notes ?? '',
+      value: normalizedValue,
+    })
+  }
+
   const updateNotes = (habitId: Habit['id'], notes: string) => {
     const existingEntry = getCheckInForHabit(habitId)
 
@@ -125,6 +147,8 @@ export const useTodayHabits = () => {
     checkIns,
     getCheckInForHabit,
     toggleCheckIn,
+    incrementCheckIn,
+    setCheckInValue,
     updateNotes,
   }
 }

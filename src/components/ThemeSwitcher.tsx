@@ -1,5 +1,5 @@
 import type { ComponentType, SVGProps } from 'react'
-import { useTheme } from '../hooks/useTheme'
+import { useTheme } from '../hooks/useThemeContext'
 import type { ThemePreference } from '../types/models'
 import { MonitorIcon, MoonIcon, SunIcon } from './icons'
 

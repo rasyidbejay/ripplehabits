@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 
 type StarterTemplateId = 'drink_water' | 'read_10_pages' | 'walk_20_minutes' | 'sleep_on_time'
@@ -26,14 +26,6 @@ export const OnboardingModal = ({
   const [name, setName] = useState('')
   const [timezone, setTimezone] = useState(defaultTimezone)
   const [selectedTemplates, setSelectedTemplates] = useState<StarterTemplateId[]>(['drink_water'])
-
-  useEffect(() => {
-    if (open) {
-      setName('')
-      setTimezone(defaultTimezone)
-      setSelectedTemplates(['drink_water'])
-    }
-  }, [defaultTimezone, open])
 
   const helperLabel = useMemo(() => {
     if (selectedTemplates.length === 0) {

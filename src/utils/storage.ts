@@ -7,12 +7,8 @@ import type {
   UserPreferences,
 } from '../types/models'
 import type { UserProfile } from '../types/user'
-import {
-  buildCompletionHistory,
-  getCurrentHabitStreak,
-  getLastCompletedDate,
-  getLongestHabitStreak,
-} from './habits'
+import { buildCompletionHistory, getLastCompletedDate } from './habits'
+import { calculateHabitStreak } from './habitAnalytics'
 
 const ROOT_STORAGE_KEY = 'ripple:v1'
 const STORAGE_VERSION = 1 as const
@@ -116,7 +112,7 @@ const normalizeHabit = (value: unknown, index: number, checkIns: CheckIn[]): Hab
   const completionHistory = buildCompletionHistory(value.id, checkIns)
   const lastCompletedDate = getLastCompletedDate(value.id, checkIns)
 
-  return {
+  const normalizedHabitBase: Omit<Habit, 'streak'> = {
     id: value.id,
     name: value.name.trim(),
     description: typeof value.description === 'string' ? value.description : '',
@@ -143,14 +139,20 @@ const normalizeHabit = (value: unknown, index: number, checkIns: CheckIn[]): Hab
     isArchived: archived,
     archived,
     active,
-    streak: {
-      current: getCurrentHabitStreak(value.id, checkIns),
-      longest: getLongestHabitStreak(value.id, checkIns),
-      lastCompletedDate,
-    },
     completionHistory,
     lastCompletedDate,
     sortOrder: typeof value.sortOrder === 'number' ? value.sortOrder : index,
+  }
+
+  const streak = calculateHabitStreak(normalizedHabitBase as Habit, checkIns)
+
+  return {
+    ...normalizedHabitBase,
+    streak: {
+      current: streak.current,
+      longest: streak.longest,
+      lastCompletedDate,
+    },
   }
 }
 

@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react'
 import { formatISO, isSameDay, parseISO } from 'date-fns'
 import type { CheckIn, Habit } from '../types/models'
 import { buildCompletionHistory, getDueHabitsForDate, getLastCompletedDate } from '../utils/habits'
+import { calculateHabitStreak, getCompletionStatus } from '../utils/habitAnalytics'
 import { storage } from '../utils/storage'
-import { calculateCurrentStreak, calculateLongestStreak } from '../utils/streaks'
 
 export const useTodayHabits = () => {
   const [habits, setHabits] = useState<Habit[]>(() => storage.get('habits') ?? [])
@@ -17,6 +17,9 @@ export const useTodayHabits = () => {
 
   const todayHabits = useMemo(() => getDueHabitsForDate(habits, today), [habits, today])
 
+
+  const getHabitById = (habitId: Habit['id']) => habits.find((habit) => habit.id === habitId)
+
   const getCheckInForHabit = (habitId: Habit['id']) =>
     checkIns.find(
       (checkIn) =>
@@ -29,8 +32,7 @@ export const useTodayHabits = () => {
       'habits',
       () => true,
       (habit) => {
-        const current = calculateCurrentStreak(habit.id, nextCheckIns)
-        const longest = calculateLongestStreak(habit.id, nextCheckIns)
+        const streak = calculateHabitStreak(habit, nextCheckIns)
         const completionHistory = buildCompletionHistory(habit.id, nextCheckIns)
         const lastCompletedDate = getLastCompletedDate(habit.id, nextCheckIns)
 
@@ -39,8 +41,8 @@ export const useTodayHabits = () => {
           completionHistory,
           lastCompletedDate,
           streak: {
-            current,
-            longest,
+            current: streak.current,
+            longest: streak.longest,
             lastCompletedDate,
           },
           updatedDate: new Date().toISOString(),
@@ -56,6 +58,11 @@ export const useTodayHabits = () => {
     updates: Pick<CheckIn, 'completed' | 'notes' | 'value'>,
   ) => {
     const existingEntry = getCheckInForHabit(habitId)
+    const habit = getHabitById(habitId)
+
+    if (!habit) {
+      return
+    }
 
     if (existingEntry) {
       const nextCheckIns = storage.update(
@@ -67,7 +74,7 @@ export const useTodayHabits = () => {
           ...checkIn,
           completed: updates.completed,
           value: updates.value,
-          status: updates.completed ? 'completed' : 'missed',
+          status: getCompletionStatus(habit, { ...checkIn, ...updates } as CheckIn),
           notes: updates.notes,
         }),
       )
@@ -82,7 +89,11 @@ export const useTodayHabits = () => {
       date: todayKey,
       completed: updates.completed,
       value: updates.value,
-      status: updates.completed ? 'completed' : 'missed',
+      status: getCompletionStatus(habit, {
+        habitId,
+        date: todayKey,
+        ...updates,
+      } as CheckIn),
       notes: updates.notes,
     })
 
@@ -92,6 +103,11 @@ export const useTodayHabits = () => {
 
   const toggleCheckIn = (habitId: Habit['id']) => {
     const existingEntry = getCheckInForHabit(habitId)
+    const habit = getHabitById(habitId)
+
+    if (!habit) {
+      return
+    }
 
     if (existingEntry) {
       saveCheckIn(habitId, {
@@ -111,6 +127,11 @@ export const useTodayHabits = () => {
 
   const incrementCheckIn = (habitId: Habit['id'], amount = 1) => {
     const existingEntry = getCheckInForHabit(habitId)
+    const habit = getHabitById(habitId)
+
+    if (!habit) {
+      return
+    }
     const nextValue = (existingEntry?.value ?? 0) + amount
 
     saveCheckIn(habitId, {
@@ -122,6 +143,11 @@ export const useTodayHabits = () => {
 
   const setCheckInValue = (habitId: Habit['id'], value: number) => {
     const existingEntry = getCheckInForHabit(habitId)
+    const habit = getHabitById(habitId)
+
+    if (!habit) {
+      return
+    }
     const normalizedValue = Math.max(0, value)
 
     saveCheckIn(habitId, {
@@ -133,6 +159,11 @@ export const useTodayHabits = () => {
 
   const updateNotes = (habitId: Habit['id'], notes: string) => {
     const existingEntry = getCheckInForHabit(habitId)
+    const habit = getHabitById(habitId)
+
+    if (!habit) {
+      return
+    }
 
     saveCheckIn(habitId, {
       completed: existingEntry?.completed ?? false,

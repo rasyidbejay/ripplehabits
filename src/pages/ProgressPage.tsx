@@ -1,9 +1,14 @@
-import { eachDayOfInterval, format, startOfDay, subDays } from 'date-fns'
+import { format } from 'date-fns'
 import { useMemo } from 'react'
 import { CompletionLineChart } from '../components/charts/CompletionLineChart'
 import { useHabits } from '../hooks/useHabits'
+import {
+  getConsistencyGridData,
+  getMonthlySummary,
+  getPerformanceListData,
+  getWeekdayDistribution,
+} from '../utils/habitAnalytics'
 import { storage } from '../utils/storage'
-import { calculateCurrentStreak } from '../utils/streaks'
 
 const cardClass = 'rounded-2xl border border-border bg-surface-secondary p-4'
 
@@ -60,25 +65,20 @@ export const ProgressPage = () => {
   const { habits } = useHabits()
   const checkIns = storage.list('checkIns')
 
-  const trend = useMemo(() => {
-    const days = eachDayOfInterval({ start: subDays(startOfDay(new Date()), 13), end: startOfDay(new Date()) })
-    return days.map((day) => {
-      const dayKey = format(day, 'yyyy-MM-dd')
-      const done = habits.filter((habit) => checkIns.some((checkIn) => checkIn.habitId === habit.id && checkIn.completed && checkIn.date === dayKey)).length
-      return { date: format(day, 'MMM d'), completionRate: habits.length ? Math.round((done / habits.length) * 100) : 0 }
-    })
-  }, [habits, checkIns])
+  const consistency = useMemo(() => getConsistencyGridData(habits, checkIns, 14), [habits, checkIns])
+  const monthly = useMemo(() => getMonthlySummary(habits, checkIns), [habits, checkIns])
+  const weekdayStats = useMemo(() => getWeekdayDistribution(habits, checkIns), [habits, checkIns])
+  const streakRows = useMemo(
+    () => getPerformanceListData(habits, checkIns)
+      .slice(0, 5)
+      .map((row) => ({ name: row.name, streak: row.currentStreak })),
+    [habits, checkIns],
+  )
 
-  const weekdayStats = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => {
-    const matching = trend.filter((_, trendIndex) => trendIndex % 7 === index)
-    const avg = matching.length ? Math.round(matching.reduce((acc, item) => acc + item.completionRate, 0) / matching.length) : 0
-    return { day, value: avg }
-  })
-
-  const streakRows = habits
-    .map((habit) => ({ name: habit.name, streak: calculateCurrentStreak(habit.id, checkIns) }))
-    .sort((a, b) => b.streak - a.streak)
-    .slice(0, 5)
+  const trend = consistency.map((item) => ({
+    date: format(new Date(`${item.date}T00:00:00`), 'MMM d'),
+    completionRate: item.completionRate,
+  }))
 
   return (
     <div className="space-y-4">
@@ -88,10 +88,11 @@ export const ProgressPage = () => {
       </div>
       <ProgressChartCard data={trend} />
       <div className="grid gap-4 lg:grid-cols-2">
-        <HeatmapCard values={trend.map((item) => item.completionRate)} />
+        <HeatmapCard values={monthly.consistency.map((item) => item.completionRate)} />
         <WeekdayStatsCard values={weekdayStats} />
       </div>
       <StreakSummaryCard rows={streakRows} />
+      <p className="text-xs text-content-muted">Monthly completion: {monthly.completionRate}%</p>
     </div>
   )
 }

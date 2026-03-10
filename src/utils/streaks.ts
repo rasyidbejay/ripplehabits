@@ -1,9 +1,7 @@
 import type { CheckIn, Habit } from '../types/models'
+import { calculateHabitStreak } from './habitAnalytics'
 
 type HabitId = Habit['id']
-type DateKey = `${number}-${number}-${number}`
-
-type StreakPeriod = 'daily' | 'weekly'
 
 interface MilestoneDefinition {
   readonly threshold: number
@@ -15,10 +13,6 @@ export interface StreakMilestone {
   readonly label: string
 }
 
-const ACTIVE_PERIOD: StreakPeriod = 'daily'
-
-const DAY_IN_MS = 24 * 60 * 60 * 1000
-
 const DAILY_MILESTONES: readonly MilestoneDefinition[] = [
   { threshold: 3, label: 'Starter' },
   { threshold: 7, label: 'On a roll' },
@@ -29,133 +23,51 @@ const DAILY_MILESTONES: readonly MilestoneDefinition[] = [
   { threshold: 365, label: 'Legend' },
 ] as const
 
-const normalizeDateKey = (value: string): DateKey | null => {
-  const parsed = new Date(value)
+const fallbackHabit = (habitId: HabitId): Habit => {
+  const now = new Date().toISOString()
 
-  if (Number.isNaN(parsed.getTime())) {
-    return null
+  return {
+    id: habitId,
+    name: '',
+    description: '',
+    category: 'custom',
+    color: '#6366f1',
+    icon: 'sparkles',
+    frequencyType: 'daily',
+    targetDays: [],
+    createdDate: now,
+    updatedDate: now,
+    isArchived: false,
+    archived: false,
+    active: true,
+    streak: { current: 0, longest: 0 },
+    completionHistory: [],
+    sortOrder: 0,
   }
-
-  return parsed.toISOString().slice(0, 10) as DateKey
 }
 
-const toUtcTimestamp = (dateKey: DateKey): number => {
-  return new Date(`${dateKey}T00:00:00.000Z`).getTime()
-}
-
-const shiftDateKeyByDays = (dateKey: DateKey, dayDelta: number): DateKey => {
-  const shiftedTimestamp = toUtcTimestamp(dateKey) + dayDelta * DAY_IN_MS
-  return new Date(shiftedTimestamp).toISOString().slice(0, 10) as DateKey
-}
-
-const getDailyCompletionDays = (
-  habitId: HabitId,
-  checkins: readonly CheckIn[],
-): DateKey[] => {
-  const completionByDate = new Map<DateKey, boolean>()
-
-  checkins.forEach((checkin) => {
-    if (checkin.habitId !== habitId) {
-      return
-    }
-
-    const dateKey = normalizeDateKey(checkin.date)
-
-    if (!dateKey) {
-      return
-    }
-
-    const wasCompleted = completionByDate.get(dateKey) ?? false
-    completionByDate.set(dateKey, wasCompleted || checkin.completed)
-  })
-
-  return [...completionByDate.entries()]
-    .filter(([, completed]) => completed)
-    .map(([dateKey]) => dateKey)
-    .sort((left, right) => toUtcTimestamp(left) - toUtcTimestamp(right))
-}
-
-const getCurrentDailyStreak = (completedDays: readonly DateKey[]): number => {
-  if (completedDays.length === 0) {
-    return 0
+const resolveHabit = (
+  habitOrId: HabitId | Habit,
+  habits?: Habit[],
+): Habit => {
+  if (typeof habitOrId !== 'string') {
+    return habitOrId
   }
 
-  const completionSet = new Set(completedDays)
-  const today = normalizeDateKey(new Date().toISOString())
-
-  if (!today) {
-    return 0
-  }
-
-  const yesterday = shiftDateKeyByDays(today, -1)
-
-  let cursor = completionSet.has(today)
-    ? today
-    : completionSet.has(yesterday)
-      ? yesterday
-      : null
-
-  if (!cursor) {
-    return 0
-  }
-
-  let streak = 0
-
-  while (completionSet.has(cursor)) {
-    streak += 1
-    cursor = shiftDateKeyByDays(cursor, -1)
-  }
-
-  return streak
-}
-
-const getLongestDailyStreak = (completedDays: readonly DateKey[]): number => {
-  if (completedDays.length === 0) {
-    return 0
-  }
-
-  let longest = 1
-  let current = 1
-
-  for (let index = 1; index < completedDays.length; index += 1) {
-    const previous = completedDays[index - 1]
-    const next = completedDays[index]
-    const dayDifference = (toUtcTimestamp(next) - toUtcTimestamp(previous)) / DAY_IN_MS
-
-    if (dayDifference === 1) {
-      current += 1
-      longest = Math.max(longest, current)
-    } else if (dayDifference > 1) {
-      current = 1
-    }
-  }
-
-  return longest
+  return habits?.find((habit) => habit.id === habitOrId) ?? fallbackHabit(habitOrId)
 }
 
 export const calculateCurrentStreak = (
-  habitId: HabitId,
+  habitOrId: HabitId | Habit,
   checkins: readonly CheckIn[],
-): number => {
-  if (ACTIVE_PERIOD !== 'daily') {
-    return 0
-  }
-
-  const completedDays = getDailyCompletionDays(habitId, checkins)
-  return getCurrentDailyStreak(completedDays)
-}
+  habits?: Habit[],
+): number => calculateHabitStreak(resolveHabit(habitOrId, habits), [...checkins]).current
 
 export const calculateLongestStreak = (
-  habitId: HabitId,
+  habitOrId: HabitId | Habit,
   checkins: readonly CheckIn[],
-): number => {
-  if (ACTIVE_PERIOD !== 'daily') {
-    return 0
-  }
-
-  const completedDays = getDailyCompletionDays(habitId, checkins)
-  return getLongestDailyStreak(completedDays)
-}
+  habits?: Habit[],
+): number => calculateHabitStreak(resolveHabit(habitOrId, habits), [...checkins]).longest
 
 export const getStreakMilestone = (streak: number): StreakMilestone | null => {
   if (!Number.isFinite(streak) || streak <= 0) {

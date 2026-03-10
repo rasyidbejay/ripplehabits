@@ -5,8 +5,8 @@ import { ActionButton, SecondaryButton } from './ui/primitives'
 const humanize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1)
 
 export const HabitCard = ({ habit, checkIns, onEdit, onDelete, onArchiveToggle }: { habit: Habit; checkIns: CheckIn[]; onEdit: (habit: Habit) => void; onDelete: (habitId: string) => void; onArchiveToggle: (habitId: string, shouldArchive: boolean) => void }) => {
-  const currentStreak = calculateCurrentStreak(habit.id, checkIns)
-  const longestStreak = calculateLongestStreak(habit.id, checkIns)
+  const currentStreak = calculateCurrentStreak(habit, checkIns)
+  const longestStreak = calculateLongestStreak(habit, checkIns)
 
   return (
     <article className="rounded-2xl border border-border bg-surface-secondary p-4 shadow-soft">

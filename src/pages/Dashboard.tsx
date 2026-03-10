@@ -14,7 +14,7 @@ export const Dashboard = () => {
   const today = new Date()
   const completedToday = habits.filter((habit) => checkIns.some((checkIn) => checkIn.habitId === habit.id && checkIn.completed && isSameDay(parseISO(checkIn.date), today))).length
   const completionRateToday = habits.length === 0 ? 0 : (completedToday / habits.length) * 100
-  const bestStreak = habits.reduce((best, habit) => Math.max(best, calculateCurrentStreak(habit.id, checkIns)), 0)
+  const bestStreak = habits.reduce((best, habit) => Math.max(best, calculateCurrentStreak(habit, checkIns)), 0)
 
   const completionTrend = Array.from({ length: 7 }).map((_, index) => {
     const date = subDays(today, 6 - index)
@@ -23,7 +23,7 @@ export const Dashboard = () => {
     return { date: format(date, 'EEE'), completionRate: habits.length === 0 ? 0 : Math.round((completedCount / habits.length) * 100) }
   })
 
-  const habitsByMomentum = habits.map((habit) => ({ ...habit, streak: calculateCurrentStreak(habit.id, checkIns), completedCount: checkIns.filter((checkIn) => checkIn.habitId === habit.id && checkIn.completed).length })).sort((l, r) => r.streak - l.streak)
+  const habitsByMomentum = habits.map((habit) => ({ ...habit, streak: calculateCurrentStreak(habit, checkIns), completedCount: checkIns.filter((checkIn) => checkIn.habitId === habit.id && checkIn.completed).length })).sort((l, r) => r.streak - l.streak)
 
   return (
     <section className="space-y-6">

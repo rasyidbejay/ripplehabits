@@ -28,7 +28,7 @@ export const ThemeSwitcher = ({ className = '' }: ThemeSwitcherProps) => {
             className={[
               'flex min-h-9 min-w-9 items-center gap-1.5 rounded-xl px-2.5 text-xs font-semibold transition-all duration-200',
               active
-                ? 'bg-accent text-white shadow-[0_6px_18px_rgba(79,70,229,0.36)]'
+                ? 'bg-accent text-white shadow-[0_6px_18px_rgba(124,92,252,0.36)]'
                 : 'text-content-secondary hover:text-content-primary',
             ].join(' ')}
             aria-pressed={active}

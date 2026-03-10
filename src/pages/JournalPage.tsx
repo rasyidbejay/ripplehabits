@@ -101,7 +101,7 @@ const HabitRow = ({
         ) : null}
         <button
           onClick={onDone}
-          className={`min-h-9 rounded-md px-3 py-1.5 text-xs font-semibold ${done ? 'bg-emerald-100 text-emerald-700' : 'bg-accent-light text-accent'}`}
+          className={`min-h-9 rounded-md px-3 py-1.5 text-xs font-semibold ${done ? 'bg-success-light text-success' : 'bg-accent-light text-accent'}`}
         >
           {isCountHabit ? 'Log' : 'Done'}
         </button>

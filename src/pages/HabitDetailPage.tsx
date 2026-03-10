@@ -241,11 +241,11 @@ export const HabitDetailPage = () => {
                   <div className="mt-3 h-56 sm:h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={analytics?.weekdayPattern ?? []} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                        <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#64748b' }} />
-                        <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 12, fill: '#64748b' }} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-chart-grid)" />
+                        <XAxis dataKey="day" tick={{ fontSize: 12, fill: 'var(--color-chart-tick)' }} />
+                        <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 12, fill: 'var(--color-chart-tick)' }} />
                         <Tooltip formatter={(value: number) => `${value}%`} />
-                        <Bar dataKey="completionRate" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                        <Bar dataKey="completionRate" fill="var(--color-chart-line)" radius={[6, 6, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>

@@ -39,7 +39,7 @@ type UpdateHabitInput = Partial<
   >
 >
 
-const DEFAULT_COLOR = '#6366f1'
+const DEFAULT_COLOR = '#7c5cfc'
 const DEFAULT_ICON = 'sparkles'
 
 export const useHabits = () => {

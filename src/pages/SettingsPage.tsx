@@ -41,7 +41,7 @@ const getPreferenceDefaults = (): UserPreferences => ({
   theme: 'system',
   weekStartsOn: 'monday',
   remindersEnabled: false,
-  defaultHabitColor: '#6366f1',
+  defaultHabitColor: '#7c5cfc',
   compactMode: false,
   defaultHabitFrequency: 'daily',
   updatedAt: new Date().toISOString(),
@@ -145,10 +145,10 @@ export const SettingsPage = ({ user, onSave, onExport, onImport, onReset }: Prop
       <SectionCard title="Profile" description="Personal details stored on this device.">
         <form onSubmit={saveProfile} className="space-y-3">
           <FormField label="Display name">
-            <input value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/40" />
+            <input value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/35" />
           </FormField>
           <FormField label="Timezone">
-            <input value={timezone} onChange={(event) => setTimezone(event.target.value)} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/40" />
+            <input value={timezone} onChange={(event) => setTimezone(event.target.value)} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/35" />
           </FormField>
           <ActionButton type="submit">Save profile</ActionButton>
         </form>
@@ -161,12 +161,12 @@ export const SettingsPage = ({ user, onSave, onExport, onImport, onReset }: Prop
       <SectionCard title="Preferences" description="Defaults used when planning your week and creating habits.">
         <div className="space-y-3">
           <FormField label="Week starts on">
-            <select value={weekStartsOn} onChange={(event) => setWeekStartsOn(event.target.value as Weekday)} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/40">
+            <select value={weekStartsOn} onChange={(event) => setWeekStartsOn(event.target.value as Weekday)} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/35">
               {weekOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
           </FormField>
           <FormField label="Default habit behavior">
-            <select value={defaultHabitFrequency} onChange={(event) => setDefaultHabitFrequency(event.target.value as HabitFrequencyType)} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/40">
+            <select value={defaultHabitFrequency} onChange={(event) => setDefaultHabitFrequency(event.target.value as HabitFrequencyType)} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/35">
               {habitBehaviorOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
           </FormField>
@@ -180,7 +180,7 @@ export const SettingsPage = ({ user, onSave, onExport, onImport, onReset }: Prop
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <SecondaryButton type="button" onClick={exportData}>Export data (JSON)</SecondaryButton>
             <SecondaryButton type="button" onClick={() => fileInputRef.current?.click()}>Import data (JSON)</SecondaryButton>
-            <SecondaryButton type="button" className="border-rose-300 text-rose-600 hover:border-rose-400 hover:text-rose-700" onClick={() => setShowResetConfirm(true)}>Reset local data</SecondaryButton>
+            <SecondaryButton type="button" className="border-danger/45 text-danger hover:border-danger hover:text-danger" onClick={() => setShowResetConfirm(true)}>Reset local data</SecondaryButton>
             <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={handleImportFile} />
           </div>
           <p className="text-xs text-content-secondary">Import replaces current local data after file validation. Export includes profile and habit history.</p>
@@ -192,8 +192,8 @@ export const SettingsPage = ({ user, onSave, onExport, onImport, onReset }: Prop
         <p className="mt-3 text-xs text-content-secondary">Ripple is local-first. No account or backend is required for settings, habits, or progress.</p>
       </SectionCard>
 
-      {notice ? <p className="text-sm text-emerald-600">{notice}</p> : null}
-      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+      {notice ? <p className="text-sm text-success">{notice}</p> : null}
+      {error ? <p className="text-sm text-danger">{error}</p> : null}
 
       <ConfirmDialog
         open={showResetConfirm}

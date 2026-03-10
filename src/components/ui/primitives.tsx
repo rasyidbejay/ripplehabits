@@ -96,7 +96,7 @@ export const FilterChips = ({ options, value, onChange }: { options: Array<{ lab
 )
 
 type BtnProps = ComponentPropsWithoutRef<'button'>
-export const ActionButton = ({ className, ...props }: BtnProps) => <button className={cx('inline-flex min-h-11 items-center justify-center rounded-xl bg-accent px-4 text-sm font-semibold text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent', className)} {...props} />
+export const ActionButton = ({ className, ...props }: BtnProps) => <button className={cx('inline-flex min-h-11 items-center justify-center rounded-xl bg-accent px-4 text-sm font-semibold text-white transition hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent', className)} {...props} />
 export const SecondaryButton = ({ className, ...props }: BtnProps) => <button className={cx('inline-flex min-h-11 items-center justify-center rounded-xl border border-border-strong bg-surface-elevated px-4 text-sm font-semibold text-content-primary transition hover:border-accent/40 hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent', className)} {...props} />
 export const IconButton = ({ className, ...props }: BtnProps) => <button className={cx('inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl border border-border bg-surface-elevated text-content-secondary transition hover:text-content-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent', className)} {...props} />
 

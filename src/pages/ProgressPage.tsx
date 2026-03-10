@@ -111,7 +111,7 @@ const StreakSummarySection = ({
       </div>
       <div className="flex items-center justify-between">
         <dt className="text-content-muted">Recent trend</dt>
-        <dd className={`font-semibold ${trend >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+        <dd className={`font-semibold ${trend >= 0 ? 'text-success' : 'text-danger'}`}>
           {trend >= 0 ? '+' : ''}{trend}%
         </dd>
       </div>

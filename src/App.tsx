@@ -4,6 +4,7 @@ import { OnboardingModal } from './components/OnboardingModal'
 import { useLocalUser } from './hooks/useLocalUser'
 import { JournalPage } from './pages/JournalPage'
 import { ManageHabitsPage } from './pages/ManageHabitsPage'
+import { HabitDetailPage } from './pages/HabitDetailPage'
 import { NotFound } from './pages/NotFound'
 import { ProgressPage } from './pages/ProgressPage'
 import { SettingsPage } from './pages/SettingsPage'
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="/journal" element={<JournalPage />} />
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/habits" element={<ManageHabitsPage />} />
+          <Route path="/habits/:habitId" element={<HabitDetailPage />} />
           <Route
             path="/settings"
             element={

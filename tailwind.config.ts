@@ -20,7 +20,20 @@ export default {
         },
         accent: {
           DEFAULT: 'var(--color-accent)',
+          hover: 'var(--color-accent-hover)',
           light: 'var(--color-accent-light)',
+        },
+        success: {
+          DEFAULT: 'var(--color-success)',
+          light: 'var(--color-success-light)',
+        },
+        warning: {
+          DEFAULT: 'var(--color-warning)',
+          light: 'var(--color-warning-light)',
+        },
+        danger: {
+          DEFAULT: 'var(--color-danger)',
+          light: 'var(--color-danger-light)',
         },
         border: {
           DEFAULT: 'var(--color-border)',

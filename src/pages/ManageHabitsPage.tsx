@@ -170,7 +170,7 @@ export const ManageHabitsPage = () => {
                   <Link to={`/habits/${habit.id}`} className="inline-flex min-h-9 items-center rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">Details</Link>
                   <button type="button" onClick={() => openEdit(habit)} className="inline-flex min-h-9 items-center rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">Edit</button>
                   <button type="button" onClick={() => (habit.isArchived ? unarchiveHabit(habit.id) : archiveHabit(habit.id))} className="inline-flex min-h-9 items-center rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">{habit.isArchived ? 'Restore' : 'Archive'}</button>
-                  <button type="button" onClick={() => setHabitToDelete(habit)} className="inline-flex min-h-9 items-center rounded-lg border border-rose-300 px-2.5 py-1 text-xs font-semibold text-rose-600">Delete</button>
+                  <button type="button" onClick={() => setHabitToDelete(habit)} className="inline-flex min-h-9 items-center rounded-lg border border-danger/45 px-2.5 py-1 text-xs font-semibold text-danger hover:border-danger">Delete</button>
                 </div>
               </article>
             ))}

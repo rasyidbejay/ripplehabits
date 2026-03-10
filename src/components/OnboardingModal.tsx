@@ -102,7 +102,7 @@ export const OnboardingModal = ({
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="How should Ripple address you?"
-          className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2.5 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
+          className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2.5 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/35"
         />
 
         <label className="mt-4 block text-sm font-medium text-content-secondary" htmlFor="onboarding-timezone">
@@ -112,7 +112,7 @@ export const OnboardingModal = ({
           id="onboarding-timezone"
           value={timezone}
           onChange={(event) => setTimezone(event.target.value)}
-          className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2.5 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
+          className="mt-1 w-full rounded-xl border border-border bg-surface-tertiary px-3 py-2.5 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/35"
         />
 
         <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
@@ -121,7 +121,7 @@ export const OnboardingModal = ({
           </button>
           <button
             type="submit"
-            className="min-h-11 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-surface-secondary transition hover:bg-accent/90"
+            className="min-h-11 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-surface-secondary transition hover:bg-accent-hover"
           >
             Start with Journal
           </button>

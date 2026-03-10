@@ -31,7 +31,7 @@ const fallbackHabit = (habitId: HabitId): Habit => {
     name: '',
     description: '',
     category: 'custom',
-    color: '#6366f1',
+    color: '#7c5cfc',
     icon: 'sparkles',
     frequencyType: 'daily',
     targetDays: [],

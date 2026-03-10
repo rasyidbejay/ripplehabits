@@ -10,7 +10,7 @@ export const ConfirmDialog = ({ open, title, children, confirmLabel = 'Confirm',
         <p className="mt-2 text-sm text-content-secondary">{children}</p>
         <div className="mt-5 flex justify-end gap-2">
           <SecondaryButton onClick={onCancel}>{cancelLabel}</SecondaryButton>
-          <ActionButton className="bg-rose-600" onClick={onConfirm}>{confirmLabel}</ActionButton>
+          <ActionButton className="bg-danger hover:bg-danger/90" onClick={onConfirm}>{confirmLabel}</ActionButton>
         </div>
       </div>
     </div>

@@ -118,7 +118,7 @@ const normalizeHabit = (value: unknown, index: number, checkIns: CheckIn[]): Hab
     name: value.name.trim(),
     description: typeof value.description === 'string' ? value.description : '',
     category: typeof value.category === 'string' ? (value.category as Habit['category']) : 'custom',
-    color: typeof value.color === 'string' ? value.color : '#6366f1',
+    color: typeof value.color === 'string' ? value.color : '#7c5cfc',
     icon: typeof value.icon === 'string' ? value.icon : 'sparkles',
     emoji: typeof value.emoji === 'string' ? value.emoji : undefined,
     frequencyType:
@@ -236,7 +236,7 @@ const createStarterHabit = (seed: StarterHabitSeed, sortOrder: number): Habit =>
     name: seed.name,
     description: seed.description,
     category: seed.category,
-    color: '#0ea5e9',
+    color: '#7c5cfc',
     icon: seed.icon,
     emoji: seed.emoji,
     frequencyType: 'daily',

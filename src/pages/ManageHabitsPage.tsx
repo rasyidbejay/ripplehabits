@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { HabitForm } from '../components/HabitForm'
 import { ActionButton, AppPageHeader, EmptyState, SecondaryButton } from '../components/ui/primitives'
@@ -30,6 +30,7 @@ const frequencyLabel = (habit: Habit) => {
 
 export const ManageHabitsPage = () => {
   const { habits, categories, createHabit, updateHabit, archiveHabit, unarchiveHabit, deleteHabit } = useHabits()
+  const [searchParams] = useSearchParams()
 
   const [status, setStatus] = useState<StatusFilter>('active')
   const [frequencyFilter, setFrequencyFilter] = useState<HabitFrequencyType | 'all'>('all')
@@ -69,6 +70,28 @@ export const ManageHabitsPage = () => {
     setIsEditorOpen(true)
   }
 
+  const addStarterHabit = (template: 'water' | 'read' | 'walk' | 'sleep') => {
+    if (template === 'water') {
+      createHabit({ name: 'Drink Water', description: 'Kickstart your day with one glass of water.', category: 'health', frequencyType: 'daily', targetDays: [], targetValue: 1, unit: 'glass', reminderTime: '08:00', emoji: '💧', icon: 'droplets' })
+      return
+    }
+
+    if (template === 'read') {
+      createHabit({ name: 'Read 10 Pages', description: 'Keep learning momentum each day.', category: 'learning', frequencyType: 'daily', targetDays: [], targetValue: 10, unit: 'pages', reminderTime: '20:00', emoji: '📚', icon: 'book-open' })
+      return
+    }
+
+    if (template === 'walk') {
+      createHabit({ name: 'Walk 20 Minutes', description: 'A short walk to recharge and reset.', category: 'fitness', frequencyType: 'daily', targetDays: [], targetValue: 20, unit: 'minutes', reminderTime: '18:00', emoji: '🚶', icon: 'footprints' })
+      return
+    }
+
+    createHabit({ name: 'Sleep on Time', description: 'End your day with a calm shutdown.', category: 'health', frequencyType: 'daily', targetDays: [], targetValue: 1, unit: 'night', reminderTime: '22:30', emoji: '🌙', icon: 'moon' })
+  }
+
+
+  const showStarterIdeas = habits.length === 0 || searchParams.get('starter') === 'true'
+
   return (
     <section className="space-y-4">
       <AppPageHeader
@@ -78,7 +101,19 @@ export const ManageHabitsPage = () => {
         actions={<ActionButton onClick={openCreate}>Create habit</ActionButton>}
       />
 
-      <section className="rounded-2xl border border-border bg-surface-secondary p-4 sm:p-5">
+      {showStarterIdeas ? (
+        <section className="rounded-2xl border border-border bg-surface-secondary p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-content-muted">Starter suggestions</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <button type="button" onClick={() => addStarterHabit('water')} className="rounded-xl border border-border bg-surface-elevated px-3 py-2 text-left"><p className="text-sm font-semibold">💧 Drink Water</p><p className="text-xs text-content-muted">1 glass daily</p></button>
+            <button type="button" onClick={() => addStarterHabit('read')} className="rounded-xl border border-border bg-surface-elevated px-3 py-2 text-left"><p className="text-sm font-semibold">📚 Read 10 Pages</p><p className="text-xs text-content-muted">Keep learning daily</p></button>
+            <button type="button" onClick={() => addStarterHabit('walk')} className="rounded-xl border border-border bg-surface-elevated px-3 py-2 text-left"><p className="text-sm font-semibold">🚶 Walk 20 Minutes</p><p className="text-xs text-content-muted">Gentle movement</p></button>
+            <button type="button" onClick={() => addStarterHabit('sleep')} className="rounded-xl border border-border bg-surface-elevated px-3 py-2 text-left"><p className="text-sm font-semibold">🌙 Sleep on Time</p><p className="text-xs text-content-muted">Consistent evenings</p></button>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="rounded-2xl border border-border bg-surface-secondary p-4">
         <div className="grid gap-3 md:grid-cols-4">
           <label className="space-y-1 text-xs font-semibold uppercase tracking-[0.14em] text-content-muted">
             Status
@@ -109,7 +144,12 @@ export const ManageHabitsPage = () => {
       </section>
 
       {filteredHabits.length === 0 ? (
-        <EmptyState title="No habits match these filters" description="Try another filter combination or create a new habit." action={<ActionButton onClick={openCreate}>Create habit</ActionButton>} />
+        <EmptyState
+          icon={habits.length === 0 ? '✨' : '🔎'}
+          title={habits.length === 0 ? 'No habits yet' : 'No habits match these filters'}
+          description={habits.length === 0 ? 'Start with one habit. You can always refine your system later.' : 'Try another filter combination or create a new habit.'}
+          action={<ActionButton onClick={openCreate}>{habits.length === 0 ? 'Create your first habit' : 'Create habit'}</ActionButton>}
+        />
       ) : (
         <section className="overflow-hidden rounded-2xl border border-border bg-surface-secondary">
           <div className="hidden grid-cols-[2fr,1fr,1fr,1fr,0.8fr,1.1fr] gap-3 border-b border-border bg-surface-elevated px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-content-muted md:grid">

@@ -136,6 +136,22 @@ export const ProgressPage = () => {
     end: startOfDay(new Date()),
   })
 
+
+  const scopedCheckIns = checkIns.filter((checkIn) => scopedHabits.some((habit) => habit.id === checkIn.habitId && checkIn.completed))
+  const uniqueCompletionDays = new Set(scopedCheckIns.map((checkIn) => checkIn.date)).size
+  const lowData = activeHabits.length > 0 && uniqueCompletionDays < 5
+
+  if (activeHabits.length === 0) {
+    return (
+      <section className={panelClass}>
+        <p className="text-xs uppercase tracking-[0.16em] text-content-muted">Progress</p>
+        <h2 className="mt-2 text-xl font-semibold">No progress yet</h2>
+        <p className="mt-1 text-sm text-content-muted">Create your first habit, then check in from Journal to start your analytics timeline.</p>
+        <Link to="/habits" className="mt-4 inline-flex rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-white">Create your first habit</Link>
+      </section>
+    )
+  }
+
   const analytics = useMemo(() => {
     const scopedHabitIds = new Set(scopedHabits.map((habit) => habit.id))
 
@@ -252,7 +268,15 @@ export const ProgressPage = () => {
         </div>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px] xl:grid-cols-[minmax(0,1fr)_280px]">
+      {lowData ? (
+        <section className="rounded-2xl border border-dashed border-border bg-surface-secondary p-4">
+          <p className="text-sm font-semibold">Not enough data yet</p>
+          <p className="mt-1 text-sm text-content-muted">Keep checking in from Journal for a few more days. Ripple will unlock clearer trends once there are at least 5 active check-in days.</p>
+          <Link to="/journal" className="mt-3 inline-flex rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-content-secondary">Open Journal</Link>
+        </section>
+      ) : null}
+
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-4">
           <CompletionRateSection data={analytics.trend} />
           <div className="grid gap-4 lg:grid-cols-2">

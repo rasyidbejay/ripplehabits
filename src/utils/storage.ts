@@ -217,22 +217,33 @@ const createProfile = (input: { name: string; timezone?: string }): UserProfile 
   }
 }
 
-const createStarterHabit = (): Habit => {
+type StarterHabitSeed = {
+  name: string
+  description: string
+  category: Habit['category']
+  icon: string
+  emoji?: string
+  unit?: string
+  targetValue?: number
+  reminderTime?: string
+}
+
+const createStarterHabit = (seed: StarterHabitSeed, sortOrder: number): Habit => {
   const now = nowIso()
 
   return {
     id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}`,
-    name: 'Drink water',
-    description: 'Kickstart your day with one glass of water.',
-    category: 'health',
+    name: seed.name,
+    description: seed.description,
+    category: seed.category,
     color: '#0ea5e9',
-    icon: 'droplets',
-    emoji: '💧',
+    icon: seed.icon,
+    emoji: seed.emoji,
     frequencyType: 'daily',
     targetDays: [],
-    targetValue: 1,
-    unit: 'glass',
-    reminderTime: '08:00',
+    targetValue: seed.targetValue,
+    unit: seed.unit,
+    reminderTime: seed.reminderTime,
     notes: '',
     createdDate: now,
     updatedDate: now,
@@ -242,20 +253,30 @@ const createStarterHabit = (): Habit => {
     streak: { current: 0, longest: 0 },
     completionHistory: [],
     lastCompletedDate: undefined,
-    sortOrder: 0,
+    sortOrder,
   }
 }
 
 export const ensureHabitStarterData = (): Habit[] => {
+  return storage.list('habits')
+}
+
+export const seedStarterHabits = (seeds: StarterHabitSeed[]) => {
   const existing = storage.list('habits')
+  const existingNames = new Set(existing.map((habit) => habit.name.trim().toLowerCase()))
+  const nextHabits = [...existing]
 
-  if (existing.length > 0) {
-    return existing
-  }
+  seeds.forEach((seed) => {
+    if (existingNames.has(seed.name.trim().toLowerCase())) {
+      return
+    }
 
-  const starter = [createStarterHabit()]
-  storage.set('habits', starter)
-  return starter
+    nextHabits.push(createStarterHabit(seed, nextHabits.length))
+  })
+
+  storage.set('habits', nextHabits)
+
+  return nextHabits
 }
 
 export const getUserProfile = (): UserProfile | null => readRoot().userProfile

@@ -55,9 +55,20 @@ export const ProgressCard = ({ title, value, subtitle }: { title: string; value:
   </article>
 )
 
-export const EmptyState = ({ title, description, action }: { title: string; description: string; action?: ReactNode }) => (
+export const EmptyState = ({
+  title,
+  description,
+  action,
+  icon,
+}: {
+  title: string
+  description: string
+  action?: ReactNode
+  icon?: string
+}) => (
   <div className="rounded-2xl border border-dashed border-border-strong bg-surface-elevated p-8 text-center">
-    <h3 className="text-base font-semibold text-content-primary">{title}</h3>
+    {icon ? <p className="text-lg" aria-hidden>{icon}</p> : null}
+    <h3 className="mt-2 text-base font-semibold text-content-primary">{title}</h3>
     <p className="mx-auto mt-2 max-w-md text-sm text-content-secondary">{description}</p>
     {action ? <div className="mt-4">{action}</div> : null}
   </div>

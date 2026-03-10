@@ -2,14 +2,58 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from './components/appShell'
 import { OnboardingModal } from './components/OnboardingModal'
 import { useLocalUser } from './hooks/useLocalUser'
+import { HabitDetailPage } from './pages/HabitDetailPage'
 import { JournalPage } from './pages/JournalPage'
 import { ManageHabitsPage } from './pages/ManageHabitsPage'
-import { HabitDetailPage } from './pages/HabitDetailPage'
 import { NotFound } from './pages/NotFound'
 import { ProgressPage } from './pages/ProgressPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { seedStarterHabits } from './utils/storage'
 
 const detectTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+
+const STARTER_TEMPLATE_MAP = {
+  drink_water: {
+    name: 'Drink Water',
+    description: 'Kickstart your day with one glass of water.',
+    category: 'health',
+    icon: 'droplets',
+    emoji: '💧',
+    targetValue: 1,
+    unit: 'glass',
+    reminderTime: '08:00',
+  },
+  read_10_pages: {
+    name: 'Read 10 Pages',
+    description: 'Read ten pages to keep learning in motion.',
+    category: 'learning',
+    icon: 'book-open',
+    emoji: '📚',
+    targetValue: 10,
+    unit: 'pages',
+    reminderTime: '20:00',
+  },
+  walk_20_minutes: {
+    name: 'Walk 20 Minutes',
+    description: 'Take a short walk to reset body and mind.',
+    category: 'fitness',
+    icon: 'footprints',
+    emoji: '🚶',
+    targetValue: 20,
+    unit: 'minutes',
+    reminderTime: '18:00',
+  },
+  sleep_on_time: {
+    name: 'Sleep on Time',
+    description: 'Protect your evening by starting wind-down on time.',
+    category: 'health',
+    icon: 'moon',
+    emoji: '🌙',
+    targetValue: 1,
+    unit: 'night',
+    reminderTime: '22:30',
+  },
+} as const
 
 const App = () => {
   const { user, isFirstRun, createUser, updateUser, exportAll, importAll, resetAll } = useLocalUser()
@@ -42,7 +86,15 @@ const App = () => {
         </Route>
       </Routes>
 
-      <OnboardingModal open={isFirstRun} defaultTimezone={detectTimezone()} onSave={createUser} />
+      <OnboardingModal
+        open={isFirstRun}
+        defaultTimezone={detectTimezone()}
+        onSave={({ name, timezone, starterTemplates }) => {
+          createUser({ name, timezone })
+          const mapped = starterTemplates.map((templateId) => STARTER_TEMPLATE_MAP[templateId])
+          seedStarterHabits(mapped)
+        }}
+      />
     </>
   )
 }

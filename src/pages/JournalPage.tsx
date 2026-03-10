@@ -2,6 +2,7 @@ import { format, startOfWeek } from 'date-fns'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTodayHabits } from '../hooks/useTodayHabits'
+import { useHabits } from '../hooks/useHabits'
 import type { Habit } from '../types/models'
 
 type SortMode = 'manual' | 'name' | 'streak'
@@ -113,7 +114,8 @@ const HabitRow = ({
 }
 
 export const JournalPage = () => {
-  const { today, todayHabits, checkIns, getCheckInForHabit, toggleCheckIn, incrementCheckIn } = useTodayHabits()
+  const { today, todayHabits, getCheckInForHabit, toggleCheckIn, incrementCheckIn } = useTodayHabits()
+  const { activeHabits } = useHabits()
   const [hideCompleted, setHideCompleted] = useState(false)
   const [sortMode, setSortMode] = useState<SortMode>('manual')
   const [selectedCategory, setSelectedCategory] = useState<'all' | Habit['category']>('all')
@@ -159,15 +161,20 @@ export const JournalPage = () => {
     ]
   }, [filteredHabits, selectedCategory, sortMode])
 
-  if (checkIns.length === 0 && todayHabits.length === 0) {
+  if (activeHabits.length === 0) {
     return (
       <section className="mx-auto max-w-2xl rounded-2xl border border-border bg-surface-secondary p-8 text-center">
         <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-content-muted">Journal</p>
-        <h2 className="text-2xl font-semibold">Build your first habit</h2>
-        <p className="mt-2 text-sm text-content-muted">Start with one habit and Ripple will turn this Journal into your daily command center.</p>
-        <Link to="/habits" className="mt-5 inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white">
-          Create your first habit
-        </Link>
+        <h2 className="text-2xl font-semibold">Your Journal is ready</h2>
+        <p className="mt-2 text-sm text-content-muted">Create your first habit to start daily check-ins and unlock meaningful Progress insights.</p>
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          <Link to="/habits" className="inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white">
+            Create your first habit
+          </Link>
+          <Link to="/habits?starter=true" className="inline-flex rounded-lg border border-border px-4 py-2 text-sm font-semibold text-content-secondary">
+            Use starter ideas
+          </Link>
+        </div>
       </section>
     )
   }
@@ -215,8 +222,12 @@ export const JournalPage = () => {
 
         {filteredHabits.length === 0 ? (
           <section className="rounded-xl border border-dashed border-border bg-surface-secondary p-8 text-center">
-            <h2 className="text-lg font-semibold">No habits due right now</h2>
-            <p className="mt-1 text-sm text-content-muted">You are clear for this moment. Enjoy the quiet streak and check back later.</p>
+            <p className="text-lg">☕</p>
+            <h2 className="mt-2 text-lg font-semibold">Nothing due in this view</h2>
+            <p className="mt-1 text-sm text-content-muted">You may be filtered to a quiet slice of the day. Try another category or review all habits.</p>
+            <button onClick={() => { setSelectedCategory('all'); setHideCompleted(false) }} className="mt-4 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-content-secondary">
+              Reset filters
+            </button>
           </section>
         ) : (
           <div className="space-y-3">
@@ -249,6 +260,7 @@ export const JournalPage = () => {
         <div className="rounded-xl border border-border bg-surface-secondary p-3">
           <p className="text-xs text-content-muted">Current streaks</p>
           <p className="text-2xl font-semibold">{todayHabits.filter((habit) => habit.streak.current > 0).length}</p>
+          {todayHabits.length === 0 ? <p className="mt-1 text-xs text-content-muted">No habits due today. You're caught up.</p> : null}
         </div>
         <div className="rounded-xl border border-border bg-surface-secondary p-3">
           <p className="text-xs text-content-muted">Week starts</p>

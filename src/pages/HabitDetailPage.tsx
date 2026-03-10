@@ -155,6 +155,9 @@ export const HabitDetailPage = () => {
     )
   }
 
+  const completionDays = useMemo(() => new Set((analytics?.trend ?? []).filter((item) => item.completionRate > 0).map((item) => item.key)).size, [analytics])
+  const hasEnoughData = completionDays >= 4
+
   const addNote = () => {
     const trimmed = noteDraft.trim()
     if (!trimmed) return
@@ -215,37 +218,47 @@ export const HabitDetailPage = () => {
             </div>
           </section>
 
-          <section className={panelClass}>
-            <h2 className="text-sm font-semibold">Completion rate trend</h2>
-            <div className="mt-3 h-56 sm:h-64"><CompletionLineChart data={analytics?.trend ?? []} /></div>
-          </section>
+          {hasEnoughData ? (
+            <>
+              <section className={panelClass}>
+                <h2 className="text-sm font-semibold">Completion rate trend</h2>
+                <div className="mt-3 h-56 sm:h-64"><CompletionLineChart data={analytics?.trend ?? []} /></div>
+              </section>
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <section className={panelClass}>
-              <h2 className="text-sm font-semibold">Consistency grid</h2>
-              <p className="mt-1 text-xs text-content-muted">Last 12 weeks of completion consistency.</p>
-              <div className="mt-3 grid grid-cols-7 gap-1.5 sm:gap-2">
-                {(analytics?.consistency ?? []).map((item) => (
-                  <div key={item.key} className="h-5 rounded-sm border border-border/40 bg-accent" title={item.key} style={{ opacity: item.value ? 0.9 : 0.12 }} />
-                ))}
-              </div>
-            </section>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <section className={panelClass}>
+                  <h2 className="text-sm font-semibold">Consistency grid</h2>
+                  <p className="mt-1 text-xs text-content-muted">Last 12 weeks of completion consistency.</p>
+                  <div className="mt-3 grid grid-cols-7 gap-1.5 sm:gap-2">
+                    {(analytics?.consistency ?? []).map((item) => (
+                      <div key={item.key} className="h-5 rounded-sm border border-border/40 bg-accent" title={item.key} style={{ opacity: item.value ? 0.9 : 0.12 }} />
+                    ))}
+                  </div>
+                </section>
 
-            <section className={panelClass}>
-              <h2 className="text-sm font-semibold">Weekday pattern</h2>
-              <div className="mt-3 h-56 sm:h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={analytics?.weekdayPattern ?? []} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#64748b' }} />
-                    <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 12, fill: '#64748b' }} />
-                    <Tooltip formatter={(value: number) => `${value}%`} />
-                    <Bar dataKey="completionRate" fill="#6366f1" radius={[6, 6, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <section className={panelClass}>
+                  <h2 className="text-sm font-semibold">Weekday pattern</h2>
+                  <div className="mt-3 h-56 sm:h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={analytics?.weekdayPattern ?? []} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                        <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#64748b' }} />
+                        <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 12, fill: '#64748b' }} />
+                        <Tooltip formatter={(value: number) => `${value}%`} />
+                        <Bar dataKey="completionRate" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </section>
               </div>
+            </>
+          ) : (
+            <section className={panelClass}>
+              <p className="text-sm font-semibold">More check-ins needed</p>
+              <p className="mt-1 text-sm text-content-muted">This habit needs a few more completion days before charts become useful. Keep checking in from Journal and your trend view will unlock automatically.</p>
+              <Link to="/journal" className="mt-3 inline-flex rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-content-secondary">Go to Journal</Link>
             </section>
-          </div>
+          )}
         </div>
 
         <aside className="space-y-4">
@@ -273,7 +286,9 @@ export const HabitDetailPage = () => {
             </div>
             <ul className="mt-3 space-y-2">
               {(analytics?.notes.length ?? 0) === 0 ? (
-                <li className="text-sm text-content-muted">No notes yet.</li>
+                <li className="rounded-lg border border-dashed border-border px-3 py-3 text-sm text-content-muted">
+                  No notes yet. Add a quick reflection after a check-in to build context over time.
+                </li>
               ) : (
                 analytics?.notes.map((note) => (
                   <li key={`${note.date}-${note.notes}`} className="rounded-lg border border-border/60 px-3 py-2">

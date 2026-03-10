@@ -1,19 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import type { ThemePreference } from '../types/models'
+import { ThemeContext, type ResolvedTheme, type ThemePreference } from './useThemeContext'
 
 const THEME_KEY = 'ripple:theme'
 const ROOT_KEY = 'ripple:v1'
-
-type ResolvedTheme = 'light' | 'dark'
-
-type ThemeContextValue = {
-  theme: ThemePreference
-  resolvedTheme: ResolvedTheme
-  setTheme: (nextTheme: ThemePreference) => void
-}
-
-const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 const isThemePreference = (value: unknown): value is ThemePreference =>
   value === 'light' || value === 'dark' || value === 'system'
@@ -71,14 +61,4 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </ThemeContext.Provider>
   )
-}
-
-export const useTheme = () => {
-  const context = useContext(ThemeContext)
-
-  if (!context) {
-    throw new Error('useTheme must be used inside ThemeProvider')
-  }
-
-  return context
 }

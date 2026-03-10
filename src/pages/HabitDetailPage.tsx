@@ -155,7 +155,7 @@ export const HabitDetailPage = () => {
     )
   }
 
-  const completionDays = useMemo(() => new Set((analytics?.trend ?? []).filter((item) => item.completionRate > 0).map((item) => item.key)).size, [analytics])
+  const completionDays = new Set((analytics?.trend ?? []).filter((item) => item.completionRate > 0).map((item) => item.key)).size
   const hasEnoughData = completionDays >= 4
 
   const addNote = () => {

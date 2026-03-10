@@ -7,7 +7,7 @@ import { useHabits } from '../hooks/useHabits'
 import { storage } from '../utils/storage'
 import { calculateCurrentStreak, calculateLongestStreak } from '../utils/streaks'
 
-const panelClass = 'rounded-2xl border border-border bg-surface-secondary p-4'
+const panelClass = 'rounded-2xl border border-border bg-surface-secondary p-4 sm:p-5'
 
 type TimeRange = '14d' | '30d' | '90d'
 
@@ -78,11 +78,11 @@ const WeekdayDistributionSection = ({ values }: { values: { day: string; complet
     <div className="mt-3 h-56 sm:h-64">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={values} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-          <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#64748b' }} />
-          <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 12, fill: '#64748b' }} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-chart-grid)" />
+          <XAxis dataKey="day" tick={{ fontSize: 12, fill: 'var(--color-chart-tick)' }} />
+          <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 12, fill: 'var(--color-chart-tick)' }} width={36} />
           <Tooltip formatter={(value: number) => `${value}%`} />
-          <Bar dataKey="completionRate" fill="#6366f1" radius={[6, 6, 0, 0]} />
+          <Bar dataKey="completionRate" fill="var(--color-chart-line)" radius={[6, 6, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

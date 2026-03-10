@@ -117,26 +117,26 @@ export const ManageHabitsPage = () => {
         <div className="grid gap-3 md:grid-cols-4">
           <label className="space-y-1 text-xs font-semibold uppercase tracking-[0.14em] text-content-muted">
             Status
-            <select value={status} onChange={(event) => setStatus(event.target.value as StatusFilter)} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2 text-sm font-medium normal-case tracking-normal text-content-primary">
+            <select value={status} onChange={(event) => setStatus(event.target.value as StatusFilter)} className="min-h-11 w-full rounded-xl border border-border bg-surface-elevated px-3 py-2 text-sm font-medium normal-case tracking-normal text-content-primary">
               {STATUS_OPTIONS.map((option) => <option key={option} value={option}>{humanize(option)}</option>)}
             </select>
           </label>
           <label className="space-y-1 text-xs font-semibold uppercase tracking-[0.14em] text-content-muted">
             Frequency
-            <select value={frequencyFilter} onChange={(event) => setFrequencyFilter(event.target.value as HabitFrequencyType | 'all')} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2 text-sm font-medium normal-case tracking-normal text-content-primary">
+            <select value={frequencyFilter} onChange={(event) => setFrequencyFilter(event.target.value as HabitFrequencyType | 'all')} className="min-h-11 w-full rounded-xl border border-border bg-surface-elevated px-3 py-2 text-sm font-medium normal-case tracking-normal text-content-primary">
               {FREQUENCY_FILTER_OPTIONS.map((option) => <option key={option} value={option}>{humanize(option)}</option>)}
             </select>
           </label>
           <label className="space-y-1 text-xs font-semibold uppercase tracking-[0.14em] text-content-muted">
             Area
-            <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value as HabitCategory | 'all')} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2 text-sm font-medium normal-case tracking-normal text-content-primary">
+            <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value as HabitCategory | 'all')} className="min-h-11 w-full rounded-xl border border-border bg-surface-elevated px-3 py-2 text-sm font-medium normal-case tracking-normal text-content-primary">
               <option value="all">All</option>
               {categories.map((category) => <option key={category} value={category}>{humanize(category)}</option>)}
             </select>
           </label>
           <label className="space-y-1 text-xs font-semibold uppercase tracking-[0.14em] text-content-muted">
             Sort by
-            <select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortKey)} className="w-full rounded-xl border border-border bg-surface-elevated px-3 py-2 text-sm font-medium normal-case tracking-normal text-content-primary">
+            <select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortKey)} className="min-h-11 w-full rounded-xl border border-border bg-surface-elevated px-3 py-2 text-sm font-medium normal-case tracking-normal text-content-primary">
               {SORT_OPTIONS.map((option) => <option key={option} value={option}>{humanize(option)}</option>)}
             </select>
           </label>
@@ -167,10 +167,10 @@ export const ManageHabitsPage = () => {
                 <p className="text-xs text-content-secondary md:text-sm">{habit.targetValue ? `${habit.targetValue} ${habit.unit ?? ''}`.trim() : '—'}</p>
                 <p className="text-xs font-semibold md:text-sm">{habit.isArchived ? 'Archived' : 'Active'}</p>
                 <div className="flex flex-wrap gap-2">
-                  <Link to={`/habits/${habit.id}`} className="rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">Details</Link>
-                  <button type="button" onClick={() => openEdit(habit)} className="rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">Edit</button>
-                  <button type="button" onClick={() => (habit.isArchived ? unarchiveHabit(habit.id) : archiveHabit(habit.id))} className="rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">{habit.isArchived ? 'Restore' : 'Archive'}</button>
-                  <button type="button" onClick={() => setHabitToDelete(habit)} className="rounded-lg border border-rose-300 px-2.5 py-1 text-xs font-semibold text-rose-600">Delete</button>
+                  <Link to={`/habits/${habit.id}`} className="inline-flex min-h-9 items-center rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">Details</Link>
+                  <button type="button" onClick={() => openEdit(habit)} className="inline-flex min-h-9 items-center rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">Edit</button>
+                  <button type="button" onClick={() => (habit.isArchived ? unarchiveHabit(habit.id) : archiveHabit(habit.id))} className="inline-flex min-h-9 items-center rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">{habit.isArchived ? 'Restore' : 'Archive'}</button>
+                  <button type="button" onClick={() => setHabitToDelete(habit)} className="inline-flex min-h-9 items-center rounded-lg border border-rose-300 px-2.5 py-1 text-xs font-semibold text-rose-600">Delete</button>
                 </div>
               </article>
             ))}
@@ -180,7 +180,7 @@ export const ManageHabitsPage = () => {
 
       {isEditorOpen ? (
         <div className="fixed inset-0 z-40 bg-black/40 p-0 md:p-6">
-          <section className="ml-auto h-full w-full overflow-y-auto border-l border-border bg-surface-primary p-4 md:h-auto md:max-h-[92vh] md:max-w-xl md:rounded-2xl md:border md:shadow-soft">
+          <section className="ml-auto h-full w-full overflow-y-auto border-l border-border bg-surface-primary p-4 pb-24 md:h-auto md:max-h-[92vh] md:max-w-xl md:rounded-2xl md:border md:p-5 md:pb-5 md:shadow-soft">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-content-primary">{editingMode === 'create' ? 'Create habit' : 'Edit habit'}</h2>
               <SecondaryButton onClick={() => setIsEditorOpen(false)}>Close</SecondaryButton>

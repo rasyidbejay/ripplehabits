@@ -81,10 +81,10 @@ const HabitRow = ({
   const icon = habit.emoji || '•'
 
   return (
-    <div className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-b-0">
+    <div className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3.5 last:border-b-0 sm:flex-nowrap sm:py-3">
       <button
         onClick={onDone}
-        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs ${done ? 'border-accent bg-accent text-white' : 'border-border-strong bg-surface-primary text-content-muted'}`}
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm ${done ? 'border-accent bg-accent text-white' : 'border-border-strong bg-surface-primary text-content-muted'}`}
         aria-label={done ? `Mark ${habit.name} as incomplete` : `Mark ${habit.name} done`}
       >
         {done ? '✓' : icon}
@@ -93,19 +93,19 @@ const HabitRow = ({
         <p className={`truncate text-sm font-medium ${done ? 'text-content-muted line-through' : ''}`}>{habit.name}</p>
         <p className="truncate text-xs text-content-muted">{formatSubtext(habit, value, done)}</p>
       </div>
-      <div className="flex items-center gap-1.5">
+      <div className="flex w-full items-center gap-1.5 sm:w-auto">
         {isCountHabit ? (
-          <button onClick={onIncrement} className="rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-content-secondary hover:bg-surface-tertiary">
+          <button onClick={onIncrement} className="min-h-9 rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-content-secondary hover:bg-surface-tertiary">
             +1
           </button>
         ) : null}
         <button
           onClick={onDone}
-          className={`rounded-md px-2.5 py-1 text-xs font-semibold ${done ? 'bg-emerald-100 text-emerald-700' : 'bg-accent-light text-accent'}`}
+          className={`min-h-9 rounded-md px-3 py-1.5 text-xs font-semibold ${done ? 'bg-emerald-100 text-emerald-700' : 'bg-accent-light text-accent'}`}
         >
           {isCountHabit ? 'Log' : 'Done'}
         </button>
-        <Link to={`/habits/${habit.id}`} className="rounded-md border border-border px-2 py-1 text-xs text-content-muted" aria-label={`Open details for ${habit.name}`}>
+        <Link to={`/habits/${habit.id}`} className="ml-auto min-h-9 rounded-md border border-border px-3 py-1.5 text-xs text-content-muted sm:ml-0" aria-label={`Open details for ${habit.name}`}>
           Details
         </Link>
       </div>
@@ -180,8 +180,8 @@ export const JournalPage = () => {
   }
 
   return (
-    <div className="flex gap-6">
-      <div className="min-w-0 flex-1 space-y-4">
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="min-w-0 space-y-4">
         <header className="space-y-3">
           <div className="flex items-end justify-between gap-2">
             <div>
@@ -191,11 +191,11 @@ export const JournalPage = () => {
             <p className="text-xs text-content-muted">{completedCount}/{todayHabits.length} completed</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
             <select
               value={selectedCategory}
               onChange={(event) => setSelectedCategory(event.target.value as 'all' | Habit['category'])}
-              className="rounded-lg border border-border bg-surface-secondary px-3 py-1.5 text-sm"
+              className="min-h-10 rounded-lg border border-border bg-surface-secondary px-3 py-1.5 text-sm"
             >
               <option value="all">All folders</option>
               {categories.map((category) => (
@@ -204,19 +204,19 @@ export const JournalPage = () => {
                 </option>
               ))}
             </select>
-            <button onClick={() => setHideCompleted((previous) => !previous)} className="rounded-lg border border-border bg-surface-secondary px-3 py-1.5 text-sm">
+            <button onClick={() => setHideCompleted((previous) => !previous)} className="min-h-10 rounded-lg border border-border bg-surface-secondary px-3 py-1.5 text-sm">
               {hideCompleted ? 'Show completed' : 'Hide completed'}
             </button>
             <select
               value={sortMode}
               onChange={(event) => setSortMode(event.target.value as SortMode)}
-              className="rounded-lg border border-border bg-surface-secondary px-3 py-1.5 text-sm"
+              className="min-h-10 rounded-lg border border-border bg-surface-secondary px-3 py-1.5 text-sm"
             >
               <option value="manual">Sort: Manual</option>
               <option value="name">Sort: Name</option>
               <option value="streak">Sort: Streak</option>
             </select>
-            <Link to="/habits" className="rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-white">Add habit</Link>
+            <Link to="/habits" className="inline-flex min-h-10 items-center rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-white">Add habit</Link>
           </div>
         </header>
 
@@ -252,17 +252,17 @@ export const JournalPage = () => {
         )}
       </div>
 
-      <aside className="hidden w-72 shrink-0 space-y-3 border-l border-border pl-5 xl:block">
-        <div className="rounded-xl border border-border bg-surface-secondary p-3">
+      <aside className="grid gap-3 sm:grid-cols-3 xl:sticky xl:top-6 xl:block xl:h-fit xl:space-y-3 xl:border-l xl:border-border xl:pl-5">
+        <div className="rounded-xl border border-border bg-surface-secondary p-3.5">
           <p className="text-xs text-content-muted">Completion</p>
           <p className="text-2xl font-semibold">{completionRate}%</p>
         </div>
-        <div className="rounded-xl border border-border bg-surface-secondary p-3">
+        <div className="rounded-xl border border-border bg-surface-secondary p-3.5">
           <p className="text-xs text-content-muted">Current streaks</p>
           <p className="text-2xl font-semibold">{todayHabits.filter((habit) => habit.streak.current > 0).length}</p>
           {todayHabits.length === 0 ? <p className="mt-1 text-xs text-content-muted">No habits due today. You're caught up.</p> : null}
         </div>
-        <div className="rounded-xl border border-border bg-surface-secondary p-3">
+        <div className="rounded-xl border border-border bg-surface-secondary p-3.5">
           <p className="text-xs text-content-muted">Week starts</p>
           <p className="text-sm font-medium">{format(startOfWeek(today), 'MMM d')}</p>
         </div>

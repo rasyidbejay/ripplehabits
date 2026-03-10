@@ -17,7 +17,7 @@ const RANGE_OPTIONS: { value: TimeRange; label: string; days: number }[] = [
 ]
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const panelClass = 'rounded-2xl border border-border bg-surface-secondary p-4'
+const panelClass = 'rounded-2xl border border-border bg-surface-secondary p-4 sm:p-5'
 
 const calculateWeeklyTarget = (habit: { frequencyType: string; targetDays: string[]; targetValue?: number }) => {
   if (habit.frequencyType === 'daily') return 7
@@ -202,7 +202,7 @@ export const HabitDetailPage = () => {
         </div>
       </header>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-4">
           <section className="grid gap-3 sm:grid-cols-3">
             <article className={panelClass}><p className="text-xs text-content-muted">Current streak</p><p className="mt-1 text-2xl font-semibold">{analytics?.currentStreak ?? 0}d</p></article>

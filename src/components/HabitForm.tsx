@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import type { Habit, HabitCategory, HabitFrequencyType, Weekday } from '../types/models'
 import { ActionButton, FormField, SecondaryButton } from './ui/primitives'
+import { storage } from '../utils/storage'
 
 type HabitFormValues = {
   name: string
@@ -33,11 +34,11 @@ const WEEKDAY_OPTIONS: { label: string; value: Weekday }[] = [
   { label: 'Thu', value: 'thursday' }, { label: 'Fri', value: 'friday' }, { label: 'Sat', value: 'saturday' }, { label: 'Sun', value: 'sunday' },
 ]
 
-const defaultValues: HabitFormValues = {
+const getDefaultValues = (): HabitFormValues => ({
   name: '',
   description: '',
   category: 'health',
-  frequencyType: 'daily',
+  frequencyType: storage.get('userPreferences')?.defaultHabitFrequency ?? 'daily',
   targetDays: [],
   targetValue: 1,
   unit: '',
@@ -46,12 +47,12 @@ const defaultValues: HabitFormValues = {
   emoji: '✨',
   icon: 'sparkles',
   isArchived: false,
-}
+})
 
 const humanize = (value: string) => value.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase())
 
 export const HabitForm = ({ onSubmit, initialValues, submitLabel = 'Save habit', onCancel }: HabitFormProps) => {
-  const valuesFromProps = useMemo(() => initialValues ?? defaultValues, [initialValues])
+  const valuesFromProps = useMemo(() => initialValues ?? getDefaultValues(), [initialValues])
   const [values, setValues] = useState<HabitFormValues>(valuesFromProps)
   const [error, setError] = useState('')
 
@@ -81,7 +82,7 @@ export const HabitForm = ({ onSubmit, initialValues, submitLabel = 'Save habit',
       isArchived: values.isArchived,
     })
 
-    if (!initialValues) setValues(defaultValues)
+    if (!initialValues) setValues(getDefaultValues())
   }
 
   return (

@@ -11,7 +11,7 @@ import { SettingsPage } from './pages/SettingsPage'
 const detectTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 
 const App = () => {
-  const { user, isFirstRun, createUser, updateUser, exportAll, importAll } = useLocalUser()
+  const { user, isFirstRun, createUser, updateUser, exportAll, importAll, resetAll } = useLocalUser()
 
   return (
     <>
@@ -25,7 +25,7 @@ const App = () => {
             path="/settings"
             element={
               user ? (
-                <SettingsPage user={user} onSave={updateUser} onExport={exportAll} onImport={importAll} />
+                <SettingsPage user={user} onSave={updateUser} onExport={exportAll} onImport={importAll} onReset={resetAll} />
               ) : (
                 <section className="space-y-2">
                   <h1 className="text-xl font-semibold">Complete onboarding to access settings.</h1>

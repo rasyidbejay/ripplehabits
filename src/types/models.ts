@@ -31,6 +31,7 @@ export interface UserPreferences {
   remindersEnabled: boolean
   defaultHabitColor: string
   compactMode: boolean
+  defaultHabitFrequency: HabitFrequencyType
   updatedAt: string
 }
 

@@ -13,6 +13,7 @@ import { calculateHabitStreak } from './habitAnalytics'
 const ROOT_STORAGE_KEY = 'ripple:v1'
 const STORAGE_VERSION = 1 as const
 const ANTHROPIC_API_KEY_STORAGE_KEY = 'anthropicApiKey'
+const THEME_STORAGE_KEY = 'ripple:theme'
 
 export interface StorageSchema {
   userPreferences: UserPreferences
@@ -330,6 +331,13 @@ export const importAppData = (
   } catch {
     return { ok: false, message: 'Import failed: invalid JSON payload.' }
   }
+}
+
+
+export const resetLocalAppData = (): void => {
+  localStorage.removeItem(ROOT_STORAGE_KEY)
+  localStorage.removeItem(ANTHROPIC_API_KEY_STORAGE_KEY)
+  localStorage.removeItem(THEME_STORAGE_KEY)
 }
 
 export const storage = {

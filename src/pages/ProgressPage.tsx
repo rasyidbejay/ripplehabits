@@ -4,12 +4,6 @@ import { Link } from 'react-router-dom'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { CompletionLineChart } from '../components/charts/CompletionLineChart'
 import { useHabits } from '../hooks/useHabits'
-import {
-  getConsistencyGridData,
-  getMonthlySummary,
-  getPerformanceListData,
-  getWeekdayDistribution,
-} from '../utils/habitAnalytics'
 import { storage } from '../utils/storage'
 import { calculateCurrentStreak, calculateLongestStreak } from '../utils/streaks'
 

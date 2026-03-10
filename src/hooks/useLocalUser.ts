@@ -4,6 +4,7 @@ import {
   exportAppData,
   getUserProfile,
   importAppData,
+  resetLocalAppData,
   saveUserProfile,
 } from '../utils/storage'
 
@@ -47,6 +48,11 @@ export const useLocalUser = () => {
     return result
   }
 
+  const resetAll = () => {
+    resetLocalAppData()
+    setUser(null)
+  }
+
   return {
     user,
     isFirstRun,
@@ -54,5 +60,6 @@ export const useLocalUser = () => {
     updateUser,
     exportAll: exportAppData,
     importAll,
+    resetAll,
   }
 }

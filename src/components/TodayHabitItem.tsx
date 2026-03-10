@@ -3,7 +3,7 @@ import { calculateCurrentStreak, getStreakMilestone } from '../utils/streaks'
 import { StreakBadge } from './StreakBadge'
 
 export const TodayHabitItem = ({ habit, checkIn, checkIns, onToggle, onSaveNotes }: { habit: Habit; checkIn?: CheckIn; checkIns: CheckIn[]; onToggle: (habitId: Habit['id']) => void; onSaveNotes: (habitId: Habit['id'], notes: string) => void }) => {
-  const currentStreak = calculateCurrentStreak(habit.id, checkIns)
+  const currentStreak = calculateCurrentStreak(habit, checkIns)
   const milestone = getStreakMilestone(currentStreak)
   const completed = Boolean(checkIn?.completed)
 

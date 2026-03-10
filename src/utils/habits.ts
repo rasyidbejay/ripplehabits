@@ -1,5 +1,4 @@
-import { getDate, isSameDay, parseISO } from 'date-fns'
-import { calculateCurrentStreak, calculateLongestStreak } from './streaks'
+import { isSameDay, parseISO } from 'date-fns'
 import type { CheckIn, Habit, Weekday } from '../types/models'
 
 const WEEKDAY_BY_INDEX: Weekday[] = [
@@ -28,7 +27,11 @@ export const isHabitDueOnDate = (habit: Habit, targetDate: Date): boolean => {
   }
 
   if (habit.frequencyType === 'weekly') {
-    return targetDate.getDay() === new Date(habit.createdDate).getDay()
+    if (habit.targetDays.length > 0) {
+      return habit.targetDays.includes(WEEKDAY_BY_INDEX[targetDate.getDay()])
+    }
+
+    return targetDate.getDay() === parseISO(habit.createdDate).getDay()
   }
 
   if (habit.frequencyType === 'specific_days') {
@@ -54,12 +57,6 @@ export const getCompletionHistoryByDate = (
     return isSameDay(checkInDate, date)
   })
 
-export const getCurrentHabitStreak = (habitId: Habit['id'], checkIns: CheckIn[]): number =>
-  calculateCurrentStreak(habitId, checkIns)
-
-export const getLongestHabitStreak = (habitId: Habit['id'], checkIns: CheckIn[]): number =>
-  calculateLongestStreak(habitId, checkIns)
-
 export const getLastCompletedDate = (habitId: Habit['id'], checkIns: CheckIn[]): string | undefined => {
   const completedDates = checkIns
     .filter((entry) => entry.habitId === habitId && entry.completed)
@@ -76,4 +73,4 @@ export const buildCompletionHistory = (habitId: Habit['id'], checkIns: CheckIn[]
     .sort((left, right) => parseISO(left).getTime() - parseISO(right).getTime())
 
 export const isHabitCreatedOnDate = (habit: Habit, date: Date): boolean =>
-  getDate(parseISO(habit.createdDate)) === getDate(date)
+  isSameDay(parseISO(habit.createdDate), date)

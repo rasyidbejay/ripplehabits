@@ -72,7 +72,7 @@ export const InsightsPage = () => {
     return habits
       .filter((habit) => !habit.isArchived)
       .map((habit) => {
-        const currentStreak = calculateCurrentStreak(habit.id, checkIns)
+        const currentStreak = calculateCurrentStreak(habit, checkIns)
 
         return {
           habitId: habit.id,
@@ -91,7 +91,7 @@ export const InsightsPage = () => {
       .map((habit) => ({
         habitId: habit.id,
         name: habit.name,
-        longestStreak: calculateLongestStreak(habit.id, checkIns),
+        longestStreak: calculateLongestStreak(habit, checkIns),
       }))
       .sort((left, right) => right.longestStreak - left.longestStreak)
       .slice(0, 5)

@@ -17,7 +17,7 @@ const RANGE_OPTIONS: { value: TimeRange; label: string; days: number }[] = [
 ]
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const panelClass = 'rounded-2xl border border-border bg-surface-secondary p-4'
+const panelClass = 'rounded-2xl border border-border bg-surface-secondary p-4 sm:p-5'
 
 const calculateWeeklyTarget = (habit: { frequencyType: string; targetDays: string[]; targetValue?: number }) => {
   if (habit.frequencyType === 'daily') return 7
@@ -199,7 +199,7 @@ export const HabitDetailPage = () => {
         </div>
       </header>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-4">
           <section className="grid gap-3 sm:grid-cols-3">
             <article className={panelClass}><p className="text-xs text-content-muted">Current streak</p><p className="mt-1 text-2xl font-semibold">{analytics?.currentStreak ?? 0}d</p></article>
@@ -236,11 +236,11 @@ export const HabitDetailPage = () => {
               <div className="mt-3 h-56 sm:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={analytics?.weekdayPattern ?? []} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#64748b' }} />
-                    <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 12, fill: '#64748b' }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-chart-grid)" />
+                    <XAxis dataKey="day" tick={{ fontSize: 12, fill: 'var(--color-chart-tick)' }} />
+                    <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 12, fill: 'var(--color-chart-tick)' }} width={36} />
                     <Tooltip formatter={(value: number) => `${value}%`} />
-                    <Bar dataKey="completionRate" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="completionRate" fill="var(--color-chart-line)" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

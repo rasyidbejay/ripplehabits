@@ -26,15 +26,15 @@ export const SidebarNavItem = ({ to, label, icon: Icon }: { to: string; label: s
 )
 
 export const AppSidebar = () => (
-  <aside className="hidden w-64 shrink-0 border-r border-border bg-surface-secondary lg:flex lg:flex-col">
-    <div className="border-b border-border px-5 py-5">
+  <aside className="hidden w-72 shrink-0 border-r border-border bg-surface-secondary lg:flex lg:flex-col">
+    <div className="border-b border-border px-6 py-6">
       <p className="text-xs uppercase tracking-[0.2em] text-content-muted">Ripple</p>
       <p className="mt-1 text-lg font-semibold">Habit Journal</p>
     </div>
-    <nav className="space-y-1 px-3 py-4">
+    <nav className="space-y-1.5 px-4 py-5">
       {navItems.map((item) => <SidebarNavItem key={item.to} {...item} />)}
     </nav>
-    <div className="mt-auto border-t border-border px-4 py-4">
+    <div className="mt-auto border-t border-border px-5 py-5">
       <ThemeSwitcher />
     </div>
   </aside>
@@ -48,11 +48,11 @@ const titles: Record<string, string> = {
 }
 
 export const MobileBottomTabs = () => (
-  <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface-secondary px-4 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
+  <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface-secondary/95 px-3 pb-[max(0.65rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur lg:hidden">
     <ul className="mx-auto flex max-w-md items-center justify-between">
       {mobileTabs.map(({ to, label, icon: Icon }) => (
         <li key={to} className="flex-1">
-          <NavLink to={to} className={({ isActive }) => `flex flex-col items-center gap-1 rounded-xl py-2 text-xs ${isActive ? 'text-accent' : 'text-content-muted'}`}>
+          <NavLink to={to} className={({ isActive }) => `flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl py-2 text-xs font-medium ${isActive ? 'bg-accent-light/70 text-accent' : 'text-content-muted'}`}>
             <Icon width={18} height={18} />
             <span>{label}</span>
           </NavLink>
@@ -70,7 +70,7 @@ export const FloatingAddButton = ({ visible }: { visible: boolean }) => {
   return (
     <Link
       to="/habits"
-      className="fixed bottom-20 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-3xl leading-none text-white shadow-soft lg:hidden"
+      className="fixed bottom-[calc(5.4rem+env(safe-area-inset-bottom))] right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-3xl leading-none text-white shadow-soft lg:hidden"
       aria-label="Add habit"
     >
       +
@@ -86,12 +86,14 @@ export const AppLayout = () => {
       <div className="flex min-h-screen">
         <AppSidebar />
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-surface-primary/95 px-4 py-3 lg:hidden">
+          <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-surface-primary/95 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur lg:hidden">
             <h1 className="text-base font-semibold">{location.pathname.startsWith('/habits/') ? 'Habit Detail' : (titles[location.pathname] ?? 'Ripple')}</h1>
             <ThemeSwitcher />
           </header>
-          <main className="flex-1 p-4 pb-28 lg:p-6">
-            <Outlet />
+          <main className="flex-1 p-4 pb-28 sm:px-6 lg:p-8">
+            <div className="mx-auto w-full max-w-6xl">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>

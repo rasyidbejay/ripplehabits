@@ -87,7 +87,7 @@ export const AppLayout = () => {
         <AppSidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-surface-primary/95 px-4 py-3 lg:hidden">
-            <h1 className="text-base font-semibold">{titles[location.pathname] ?? 'Ripple'}</h1>
+            <h1 className="text-base font-semibold">{location.pathname.startsWith('/habits/') ? 'Habit Detail' : (titles[location.pathname] ?? 'Ripple')}</h1>
             <ThemeSwitcher />
           </header>
           <main className="flex-1 p-4 pb-28 lg:p-6">

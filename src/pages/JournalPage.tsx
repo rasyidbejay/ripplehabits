@@ -104,9 +104,9 @@ const HabitRow = ({
         >
           {isCountHabit ? 'Log' : 'Done'}
         </button>
-        <button className="rounded-md border border-border px-2 py-1 text-xs text-content-muted" aria-label={`More actions for ${habit.name}`}>
-          •••
-        </button>
+        <Link to={`/habits/${habit.id}`} className="rounded-md border border-border px-2 py-1 text-xs text-content-muted" aria-label={`Open details for ${habit.name}`}>
+          Details
+        </Link>
       </div>
     </div>
   )

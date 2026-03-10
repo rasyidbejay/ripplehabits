@@ -1,5 +1,6 @@
 import { eachDayOfInterval, format, getDay, startOfDay, subDays } from 'date-fns'
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { CompletionLineChart } from '../components/charts/CompletionLineChart'
 import { useHabits } from '../hooks/useHabits'
@@ -57,7 +58,7 @@ const HabitPerformanceSection = ({
       {habits.map((habit) => (
         <li key={habit.id} className="rounded-xl border border-border/60 px-3 py-2">
           <div className="flex items-center justify-between gap-3 text-sm">
-            <span className="truncate">{habit.name}</span>
+            <Link to={`/habits/${habit.id}`} className="truncate text-accent hover:underline">{habit.name}</Link>
             <span className="text-content-muted">{habit.completions} done · {habit.completionRate}%</span>
           </div>
           <div className="mt-2 grid grid-cols-14 gap-1">

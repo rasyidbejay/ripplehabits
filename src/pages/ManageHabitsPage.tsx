@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { HabitForm } from '../components/HabitForm'
 import { ActionButton, AppPageHeader, EmptyState, SecondaryButton } from '../components/ui/primitives'
@@ -126,6 +127,7 @@ export const ManageHabitsPage = () => {
                 <p className="text-xs text-content-secondary md:text-sm">{habit.targetValue ? `${habit.targetValue} ${habit.unit ?? ''}`.trim() : '—'}</p>
                 <p className="text-xs font-semibold md:text-sm">{habit.isArchived ? 'Archived' : 'Active'}</p>
                 <div className="flex flex-wrap gap-2">
+                  <Link to={`/habits/${habit.id}`} className="rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">Details</Link>
                   <button type="button" onClick={() => openEdit(habit)} className="rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">Edit</button>
                   <button type="button" onClick={() => (habit.isArchived ? unarchiveHabit(habit.id) : archiveHabit(habit.id))} className="rounded-lg border border-border px-2.5 py-1 text-xs font-semibold text-content-primary">{habit.isArchived ? 'Restore' : 'Archive'}</button>
                   <button type="button" onClick={() => setHabitToDelete(habit)} className="rounded-lg border border-rose-300 px-2.5 py-1 text-xs font-semibold text-rose-600">Delete</button>
